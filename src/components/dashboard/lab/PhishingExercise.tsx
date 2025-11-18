@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button';
 import { AlertCircle, CheckCircle, Mail, Send, ShieldCheck, ShieldOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { Separator } from '../ui/separator';
+import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar';
+import { Separator } from '../../ui/separator';
 
 const emails = [
   {
@@ -67,7 +67,7 @@ const emails = [
   }
 ];
 
-export function PhishingLab() {
+export function PhishingExercise() {
   const [currentEmailIndex, setCurrentEmailIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<'phishing' | 'safe' | null>(null);
   const [result, setResult] = useState<'correct' | 'incorrect' | null>(null);
@@ -95,7 +95,7 @@ export function PhishingLab() {
   return (
     <Card className="bg-card/50 border-border/50 shadow-xl">
       <CardHeader>
-        <CardTitle className="font-headline text-2xl">Phishing Identification Lab</CardTitle>
+        <CardTitle className="font-headline text-2xl">Phishing Identification Exercise</CardTitle>
         <CardDescription>Analyze the email below. Is it a real email or a phishing attempt?</CardDescription>
       </CardHeader>
       <CardContent>

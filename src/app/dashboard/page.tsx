@@ -3,7 +3,7 @@
 import { AiAssistant } from '@/components/dashboard/AiAssistant';
 import { LessonGrid } from '@/components/dashboard/LessonGrid';
 import { AccountSettings } from '@/components/dashboard/AccountSettings';
-import { PhishingLab } from '@/components/dashboard/PhishingLab';
+import { Lab } from '@/components/dashboard/Lab';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LayoutDashboard, Bot, User, TestTube2 } from 'lucide-react';
 
@@ -18,7 +18,7 @@ export default function DashboardPage() {
           <Bot className="mr-2" /> AI Assistant
         </TabsTrigger>
         <TabsTrigger value="lab" className="h-10 text-sm">
-            <TestTube2 className="mr-2" /> Phishing Lab
+            <TestTube2 className="mr-2" /> Lab
         </TabsTrigger>
         <TabsTrigger value="account" className="h-10 text-sm">
           <User className="mr-2" /> Account
@@ -32,7 +32,7 @@ export default function DashboardPage() {
         <AiAssistant />
       </TabsContent>
        <TabsContent value="lab" className="mt-6">
-        <PhishingLab />
+        <Lab />
       </TabsContent>
       <TabsContent value="account" className="mt-6">
         <AccountSettings />
