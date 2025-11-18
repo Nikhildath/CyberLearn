@@ -9,6 +9,25 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { ParticleCanvas } from './ParticleCanvas';
 import { Input } from '@/components/ui/input';
+import { ScrollArea } from '../ui/scroll-area';
+
+function MarkdownRenderer({ content }: { content: string }) {
+  // A simple markdown renderer
+  const html = content
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold
+    .replace(/\*(.*?)\*/g, '<em>$1</em>') // Italics
+    .replace(/```([\s\S]*?)```/g, '<pre class="bg-muted/50 p-2 rounded-md my-2 text-sm"><code>$1</code></pre>') // Code blocks
+    .replace(/`(.*?)`/g, '<code class="bg-muted/50 px-1 rounded-sm text-sm">$1</code>') // Inline code
+    .replace(/^(#+)\s*(.*)/gm, (match, hashes, text) => {
+        const level = hashes.length;
+        return `<h${level} class="font-headline text-primary mt-4 mb-2 text-${3-level}xl">${text}</h${level}>`;
+    })
+    .replace(/^\s*-\s(.*)/gm, '<li class="ml-4">$1</li>') // List items
+    .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
+    .replace(/\n/g, '<br />');
+
+  return <div className="prose prose-invert prose-sm max-w-none text-left" dangerouslySetInnerHTML={{ __html: html }} />;
+}
 
 export function AiAssistant() {
   const [isRecording, setIsRecording] = useState(false);
@@ -182,8 +201,8 @@ export function AiAssistant() {
   const averageAmplitude = audioData.length > 0 ? audioData.reduce((a, b) => a + b) / audioData.length : 0;
 
   const getDisplayMessage = () => {
-      if (state === 'text-reply') return responseText;
-      if (transcript) return transcript;
+      if (state === 'text-reply') return <MarkdownRenderer content={responseText} />;
+      if (transcript) return <p className="text-lg font-medium text-foreground transition-opacity duration-300">{transcript}</p>;
       return <span className="text-muted-foreground">
           {
               {
@@ -221,11 +240,11 @@ export function AiAssistant() {
             </div>
         </div>
 
-        <div className="min-h-[72px] w-full text-center flex items-center justify-center p-4">
-          <p className="text-lg font-medium text-foreground transition-opacity duration-300">
-            {getDisplayMessage()}
-            </p>
-        </div>
+        <ScrollArea className="h-40 w-full rounded-md border border-border/50 bg-background/20 p-4">
+            <div className="min-h-[72px] w-full text-center flex items-center justify-center p-4">
+                {getDisplayMessage()}
+            </div>
+        </ScrollArea>
 
       </CardContent>
        <CardFooter className="p-4 border-t border-border/50">
