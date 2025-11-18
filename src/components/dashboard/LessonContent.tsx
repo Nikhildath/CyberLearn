@@ -6,13 +6,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { CheckCircle, XCircle, AlertTriangle, ArrowRight, RefreshCw } from 'lucide-react';
+import { CheckCircle, XCircle, AlertTriangle, ArrowRight, RefreshCw, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { IpInfoCard } from './IpInfoCard';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
-
-export function LessonContent({ lesson }: { lesson: Lesson | null }) {
+export function LessonContent({ lesson, onComplete }: { lesson: Lesson | null, onComplete: () => void }) {
   const { progress, updateLessonProgress } = useAuth();
   const { toast } = useToast();
 
@@ -30,13 +30,7 @@ export function LessonContent({ lesson }: { lesson: Lesson | null }) {
   }, [lesson]);
 
   if (!lesson) {
-    return (
-      <Card className="flex h-full items-center justify-center border-border/30 bg-card/30">
-        <CardContent className="p-6 text-center">
-          <p className="text-lg font-medium text-muted-foreground">Select a lesson from the sidebar to begin your training.</p>
-        </CardContent>
-      </Card>
-    );
+    return null;
   }
   
   const currentMessage = lesson.content[messageIndex];
@@ -86,34 +80,34 @@ export function LessonContent({ lesson }: { lesson: Lesson | null }) {
     setQuizResult(null);
   };
   
-  if (lesson.id === 'ip-address' && !showQuiz && !quizResult) {
+  const renderContent = () => {
+    if (lesson.id === 'ip-address' && !showQuiz && !quizResult) {
+      return (
+        <IpInfoCard lesson={lesson} onComplete={() => setShowQuiz(true)} />
+      );
+    }
+
+    if (!showQuiz) {
+        return (
+            <div className="flex-grow flex flex-col justify-between text-lg text-foreground/90 p-6">
+                <p className="flex-grow leading-relaxed">{currentMessage}</p>
+                <div className="flex items-center gap-4 mt-6">
+                    <div className="flex-1 text-sm text-muted-foreground">
+                        Step {messageIndex + 1} of {lesson.content.length}
+                    </div>
+                    <Button onClick={handleNext} className="w-1/2">
+                        {isLastMessage ? 'Start Quiz' : 'Next'} <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                </div>
+          </div>
+        );
+    }
+    
     return (
-      <IpInfoCard lesson={lesson} onComplete={() => setShowQuiz(true)} />
-    );
-  }
-
-  return (
-    <Card className="flex h-full flex-col border-border/50 bg-card/50 shadow-xl">
-      <CardHeader className="flex flex-row items-start gap-4">
-        <lesson.Icon className="h-10 w-10 text-primary flex-shrink-0 mt-1" />
-        <div>
-          <CardTitle className="font-headline text-3xl text-primary">{lesson.title}</CardTitle>
-          <CardDescription>Interactive Learning Module</CardDescription>
-        </div>
-      </CardHeader>
-
-      {!showQuiz ? (
-        <CardContent className="flex-grow flex flex-col justify-between text-lg text-foreground/90 p-6">
-          <p className="flex-grow">{currentMessage}</p>
-          <Button onClick={handleNext} className="w-full mt-4">
-            {isLastMessage ? 'Start Quiz' : 'Next'} <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-        </CardContent>
-      ) : (
-        <CardContent className="flex-grow flex flex-col p-6">
-          <h3 className="font-headline text-xl mb-4">Quick Test</h3>
+        <div className="flex-grow flex flex-col p-6">
+          <h3 className="font-headline text-xl mb-4">Quick Test: {lesson.title}</h3>
           <div className="space-y-4">
-            <p className="font-medium">{lesson.quiz[0].question}</p>
+            <p className="font-medium text-lg">{lesson.quiz[0].question}</p>
             <RadioGroup
               value={selectedAnswer || ''}
               onValueChange={setSelectedAnswer}
@@ -121,14 +115,14 @@ export function LessonContent({ lesson }: { lesson: Lesson | null }) {
             >
               {lesson.quiz[0].options.map((option, index) => (
                 <div key={index} className={cn(
-                  "flex items-center space-x-3 p-3 rounded-md border transition-all",
+                  "flex items-center space-x-3 p-4 rounded-lg border-2 transition-all",
                   quizResult && option === lesson.quiz[0].correctAnswer && "bg-green-500/10 border-green-500",
                   quizResult && option !== lesson.quiz[0].correctAnswer && selectedAnswer === option && "bg-red-500/10 border-red-500",
-                  !quizResult && "border-border/50 hover:bg-accent/50",
+                  !quizResult && "border-border/50 hover:bg-accent/50 hover:border-accent cursor-pointer",
                   !!quizResult && "cursor-not-allowed"
                 )}>
-                  <RadioGroupItem value={option} id={`q1-o${index}`} />
-                  <Label htmlFor={`q1-o${index}`} className="flex-1 cursor-pointer">{option}</Label>
+                  <RadioGroupItem value={option} id={`q1-o${index}`} className="h-5 w-5" />
+                  <Label htmlFor={`q1-o${index}`} className="flex-1 cursor-pointer text-base">{option}</Label>
                   {quizResult && option === lesson.quiz[0].correctAnswer && <CheckCircle className="h-5 w-5 text-green-500" />}
                   {quizResult && option !== lesson.quiz[0].correctAnswer && selectedAnswer === option && <XCircle className="h-5 w-5 text-red-500" />}
                 </div>
@@ -159,12 +153,35 @@ export function LessonContent({ lesson }: { lesson: Lesson | null }) {
                     <CheckCircle className="h-8 w-8 text-green-500 mx-auto mb-2" />
                     <h4 className="font-semibold text-green-400">Lesson Complete!</h4>
                     <p className="text-sm text-green-500/80">You've mastered the basics of {lesson.title}.</p>
+                     <Button onClick={onComplete} className="w-full mt-4">
+                        Close Lesson
+                    </Button>
                 </div>
               )}
             </div>
           )}
-        </CardContent>
-      )}
-    </Card>
+        </div>
+    )
+  }
+
+  return (
+    <div className="flex h-full flex-col">
+        <div className="flex items-center justify-between p-4 border-b border-border/50">
+            <div className="flex items-center gap-4">
+                <lesson.Icon className="h-8 w-8 text-primary flex-shrink-0" />
+                <div>
+                    <h2 className="font-headline text-2xl text-primary">{lesson.title}</h2>
+                    <p className="text-sm text-muted-foreground">Interactive Learning Module</p>
+                </div>
+            </div>
+            <Button variant="ghost" size="icon" onClick={onComplete}>
+                <X className="h-5 w-5"/>
+                <span className="sr-only">Close</span>
+            </Button>
+        </div>
+        <ScrollArea className="flex-grow">
+            {renderContent()}
+        </ScrollArea>
+    </div>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { Loader2, LogOut } from 'lucide-react';
@@ -21,6 +21,15 @@ import { Logo } from '@/components/Logo';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, XCircle } from 'lucide-react';
 import { ProfileEditor } from '@/components/dashboard/ProfileEditor';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
+import { LessonContent } from '@/components/dashboard/LessonContent';
+import { Lesson } from '@/lib/lessons';
 
 export default function DashboardLayout({
   children,
@@ -29,6 +38,7 @@ export default function DashboardLayout({
 }) {
   const { user, logout, progress } = useAuth();
   const router = useRouter();
+  const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
 
   useEffect(() => {
     if (!user) {
@@ -44,6 +54,10 @@ export default function DashboardLayout({
     );
   }
 
+  const handleLessonClick = (lesson: Lesson) => {
+    setSelectedLesson(lesson);
+  };
+
   return (
     <SidebarProvider>
       <Sidebar side="left" className="border-r border-border/50" collapsible="icon">
@@ -57,7 +71,7 @@ export default function DashboardLayout({
             {lessons.map((lesson) => (
               <SidebarMenuItem key={lesson.id}>
                 <SidebarMenuButton
-                  href={`#${lesson.id}`}
+                  onClick={() => handleLessonClick(lesson)}
                   className="group/button"
                   tooltip={{
                     children: lesson.title,
@@ -97,6 +111,12 @@ export default function DashboardLayout({
         </header>
         <div className="p-4 sm:p-6 lg:p-8">{children}</div>
       </SidebarInset>
+
+      <Dialog open={!!selectedLesson} onOpenChange={(isOpen) => !isOpen && setSelectedLesson(null)}>
+        <DialogContent className="max-w-4xl h-[90vh] flex flex-col bg-card border-border">
+            {selectedLesson && <LessonContent lesson={selectedLesson} onComplete={() => setSelectedLesson(null)} />}
+        </DialogContent>
+      </Dialog>
     </SidebarProvider>
   );
 }
