@@ -1,57 +1,91 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, Mic, MicOff, Play } from 'lucide-react';
+import { Loader2, Mic, MicOff } from 'lucide-react';
 import { interactiveCybersecurityAssistant } from '@/ai/flows/interactive-cybersecurity-assistant';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
+import { ParticleCanvas } from './ParticleCanvas';
 
 export function AiAssistant() {
   const [isRecording, setIsRecording] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [responseAudio, setResponseAudio] = useState<string | null>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
+  const [audioData, setAudioData] = useState<Uint8Array>(new Uint8Array(0));
   const { toast } = useToast();
 
+  const setupAudioAnalysis = useCallback(() => {
+    if (!audioRef.current) return;
+    if (!audioContextRef.current) {
+      audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    const audioContext = audioContextRef.current;
+    if (!analyserRef.current) {
+      analyserRef.current = audioContext.createAnalyser();
+      const source = audioContext.createMediaElementSource(audioRef.current);
+      source.connect(analyserRef.current);
+      analyserRef.current.connect(audioContext.destination);
+    }
+    analyserRef.current.fftSize = 64;
+    const bufferLength = analyserRef.current.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+    setAudioData(dataArray);
+
+    const animate = () => {
+      analyserRef.current?.getByteFrequencyData(dataArray);
+      setAudioData(new Uint8Array(dataArray));
+      animationFrameRef.current = requestAnimationFrame(animate);
+    };
+    animate();
+  }, []);
+
   useEffect(() => {
-    // Component Did Mount: Check for SpeechRecognition API
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
       toast({
         variant: 'destructive',
         title: 'Browser Not Supported',
-        description: 'Speech recognition is not supported in this browser. Please use Chrome or Safari.',
+        description: 'Speech recognition is not supported here. Please use a modern browser like Chrome.',
       });
       return;
     }
 
     const recognition = new SpeechRecognition();
-    recognition.continuous = true;
+    recognition.continuous = false;
     recognition.interimResults = true;
     recognition.lang = 'en-US';
 
     recognition.onresult = (event) => {
-      let interimTranscript = '';
-      let finalTranscript = '';
+      let interim = '';
+      let final = '';
       for (let i = 0; i < event.results.length; i++) {
-        const transcriptPart = event.results[i][0].transcript;
         if (event.results[i].isFinal) {
-          finalTranscript += transcriptPart;
+          final += event.results[i][0].transcript;
         } else {
-          interimTranscript += transcriptPart;
+          interim += event.results[i][0].transcript;
         }
       }
-      setTranscript(finalTranscript + interimTranscript);
+      setTranscript(final + interim);
     };
+
+    recognition.onend = () => {
+        setIsRecording(false);
+    }
 
     recognition.onerror = (event) => {
       toast({
         variant: 'destructive',
         title: 'Speech Recognition Error',
-        description: `Error occurred: ${event.error}`,
+        description: `Error: ${event.error}`,
       });
       setIsRecording(false);
     };
@@ -59,31 +93,42 @@ export function AiAssistant() {
     recognitionRef.current = recognition;
 
     return () => {
-      // Component Will Unmount: Stop recognition
       recognition.stop();
+      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+      audioContextRef.current?.close();
     };
   }, [toast]);
+
+  useEffect(() => {
+      if (!isRecording && transcript.trim()) {
+          processRequest(transcript);
+      }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isRecording]);
 
   const handleToggleRecording = () => {
     if (isRecording) {
       recognitionRef.current?.stop();
-      setIsRecording(false);
-      if (transcript.trim()) {
-        processRequest(transcript);
-      }
     } else {
       setTranscript('');
       setResponseAudio(null);
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+      setIsPlaying(false);
       recognitionRef.current?.start();
       setIsRecording(true);
     }
   };
 
   const processRequest = async (query: string) => {
+    if(!query) return;
     setIsThinking(true);
     try {
       const result = await interactiveCybersecurityAssistant({ query });
       setResponseAudio(result.media);
+      // The audio element will auto-play
     } catch (error) {
       console.error('AI assistant error:', error);
       toast({
@@ -96,47 +141,83 @@ export function AiAssistant() {
     }
   };
 
-  const playAudio = () => {
-    if (responseAudio && audioRef.current) {
-        audioRef.current.play();
-    }
+  const handleAudioPlay = () => {
+    setupAudioAnalysis();
+    setIsPlaying(true);
+    audioContextRef.current?.resume();
+  };
+  
+  const handleAudioPause = () => {
+    setIsPlaying(false);
+    if(animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
   }
 
+  const state = isRecording ? 'recording' : isThinking ? 'thinking' : (responseAudio && isPlaying) ? 'speaking' : 'idle';
+  const averageAmplitude = audioData.length > 0 ? audioData.reduce((a, b) => a + b) / audioData.length : 0;
+
   return (
-    <Card className="flex h-full flex-col">
+    <Card className="flex h-full flex-col bg-card/50 border-border/50 shadow-xl">
       <CardHeader>
-        <CardTitle className="font-headline text-2xl">Interactive AI Assistant</CardTitle>
+        <CardTitle className="font-headline text-2xl text-primary">Interactive AI Assistant</CardTitle>
+        <CardDescription>
+          Ask a cybersecurity question. Click the orb to talk.
+        </CardDescription>
       </CardHeader>
-      <CardContent className="flex-grow space-y-4">
-        <p className="text-sm text-muted-foreground">
-          Ask a cybersecurity question. Click the microphone to start and stop recording.
-        </p>
-        <div className="min-h-[60px] rounded-md border bg-muted p-3 text-sm">
-          <p className="font-medium text-foreground">Your query:</p>
-          <p className="text-muted-foreground">{transcript || '...'}</p>
+      <CardContent className="flex-grow flex flex-col items-center justify-center space-y-4 text-center">
+        
+        <div className="relative w-48 h-48 flex items-center justify-center">
+            <ParticleCanvas state={state} amplitude={averageAmplitude} />
+            <Button
+                onClick={handleToggleRecording}
+                size="icon"
+                className={cn('h-24 w-24 rounded-full transition-all duration-300 z-10 text-white',
+                    state === 'recording' && 'bg-red-500/80 hover:bg-red-600/80',
+                    state === 'thinking' && 'bg-primary/50 cursor-not-allowed',
+                    state === 'speaking' && 'bg-accent/80',
+                    state === 'idle' && 'bg-primary/80 hover:bg-primary/90'
+                )}
+                disabled={isThinking}
+                aria-label={isRecording ? "Stop recording" : "Start recording"}
+            >
+                {isThinking ? (
+                    <Loader2 size={36} className="animate-spin" />
+                ) : isRecording ? (
+                    <MicOff size={36} />
+                ) : (
+                    <Mic size={36} />
+                )}
+            </Button>
         </div>
-        <div className="flex items-center justify-center gap-4">
-          <Button
-            onClick={handleToggleRecording}
-            size="icon"
-            className={`h-16 w-16 rounded-full transition-all duration-300 ${
-              isRecording ? 'bg-red-500 hover:bg-red-600' : 'bg-primary'
-            }`}
-            disabled={isThinking}
-          >
-            {isRecording ? <MicOff size={28} /> : <Mic size={28} />}
-          </Button>
-          {isThinking && <Loader2 className="h-8 w-8 animate-spin" />}
+
+        <div className="min-h-[40px] w-full text-center">
+          <p className="text-lg font-medium text-foreground transition-opacity duration-300">
+            {transcript || <span className="text-muted-foreground">
+                {
+                    {
+                        'recording': 'Listening...',
+                        'thinking': 'Thinking...',
+                        'speaking': 'Here is my response...',
+                        'idle': 'Ask me anything...'
+                    }[state]
+                }
+            </span>}
+            </p>
         </div>
+
       </CardContent>
-      <CardFooter>
+       <CardFooter className="min-h-[50px]">
         {responseAudio && (
-          <div className="w-full">
-            <p className="mb-2 text-sm font-medium">AI Response:</p>
-            <audio ref={audioRef} src={responseAudio} controls className="w-full">
+            <audio
+              ref={audioRef}
+              src={responseAudio}
+              autoPlay
+              onPlay={handleAudioPlay}
+              onEnded={handleAudioPause}
+              onPause={handleAudioPause}
+              className="w-full hidden"
+            >
               Your browser does not support the audio element.
             </audio>
-          </div>
         )}
       </CardFooter>
     </Card>

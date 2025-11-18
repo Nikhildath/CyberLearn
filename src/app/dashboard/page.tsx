@@ -1,41 +1,19 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { lessons, type Lesson } from '@/lib/lessons';
+import { lessons } from '@/lib/lessons';
 import { AiAssistant } from '@/components/dashboard/AiAssistant';
-
-function LessonContent({ lesson }: { lesson: Lesson | null }) {
-  if (!lesson) {
-    return (
-      <Card className="flex h-full items-center justify-center">
-        <CardContent className="p-6 text-center">
-          <p className="text-lg font-medium text-muted-foreground">Select a lesson from the sidebar to begin.</p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  return (
-    <Card className="flex h-full flex-col">
-      <CardHeader className="flex flex-row items-center gap-4">
-        <lesson.Icon className="h-10 w-10 text-accent" />
-        <div>
-          <CardTitle className="font-headline text-2xl">{lesson.title}</CardTitle>
-          <CardDescription>Key concepts and best practices.</CardDescription>
-        </div>
-      </CardHeader>
-      <CardContent className="text-base text-foreground/90">
-        <p>{lesson.content}</p>
-      </CardContent>
-    </Card>
-  );
-}
+import { LessonContent } from '@/components/dashboard/LessonContent';
+import { useAuth } from '@/context/AuthContext';
+import { Progress } from '@/components/ui/progress';
 
 export default function DashboardPage() {
   const [selectedLessonId, setSelectedLessonId] = useState<string>('');
-  const [completedLessons, setCompletedLessons] = useState<Set<string>>(new Set());
+  const { progress } = useAuth();
+  
+  const completedLessonsCount = useMemo(() => {
+      return Object.values(progress).filter(status => status === 'completed').length;
+  }, [progress]);
 
   useEffect(() => {
     const handleHashChange = () => {
@@ -43,9 +21,7 @@ export default function DashboardPage() {
       const lessonExists = lessons.some(l => l.id === hash);
       if (lessonExists) {
         setSelectedLessonId(hash);
-        setCompletedLessons(prev => new Set(prev).add(hash));
       } else if (lessons.length > 0) {
-        // Fallback to first lesson if hash is invalid or empty
         const firstLessonId = lessons[0].id;
         window.location.hash = firstLessonId;
       }
@@ -53,7 +29,6 @@ export default function DashboardPage() {
     
     window.addEventListener('hashchange', handleHashChange);
     
-    // Initial load
     handleHashChange();
     if (!window.location.hash && lessons.length > 0) {
         window.location.hash = lessons[0].id;
@@ -66,23 +41,23 @@ export default function DashboardPage() {
     return lessons.find((lesson) => lesson.id === selectedLessonId) || null;
   }, [selectedLessonId]);
   
-  const progressValue = (completedLessons.size / lessons.length) * 100;
+  const progressValue = (completedLessonsCount / lessons.length) * 100;
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold">Your Progress</h2>
+        <h2 className="text-2xl font-bold font-headline">Your Progress</h2>
         <p className="text-sm text-muted-foreground">
-          You've completed {completedLessons.size} of {lessons.length} lessons.
+          You've completed {completedLessonsCount} of {lessons.length} lessons. Keep going!
         </p>
-        <Progress value={progressValue} className="mt-2" />
+        <Progress value={progressValue} className="mt-2 h-2" />
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
-        <div className="min-h-[400px]">
+        <div className="min-h-[500px] lg:col-span-1">
           <LessonContent lesson={selectedLesson} />
         </div>
-        <div className="min-h-[400px]">
+        <div className="min-h-[500px] lg:col-span-1">
           <AiAssistant />
         </div>
       </div>

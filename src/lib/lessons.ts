@@ -11,14 +11,23 @@ import {
   Smartphone,
   Router,
   Building,
+  Network,
   type LucideIcon,
 } from 'lucide-react';
+
+export type LessonQuiz = {
+  question: string;
+  options: string[];
+  correctAnswer: string;
+  explanation: string;
+}
 
 export type Lesson = {
   id: string;
   title: string;
   Icon: LucideIcon;
-  content: string;
+  content: string[];
+  quiz: LessonQuiz[];
 };
 
 export const lessons: Lesson[] = [
@@ -26,84 +35,123 @@ export const lessons: Lesson[] = [
     id: 'phishing',
     title: 'Phishing',
     Icon: Fish,
-    content:
-      "Phishing is a fraudulent attempt to obtain sensitive information such as usernames, passwords, and credit card details by disguising as a trustworthy entity in an electronic communication. Watch out for suspicious emails or messages asking for personal info. Always verify the sender's email address and look for grammatical errors. Never click on suspicious links.",
+    content: [
+        "Welcome to your first interactive lesson on Phishing!",
+        "Phishing is a cyber attack where scammers try to trick you into giving away sensitive information, like passwords or credit card numbers.",
+        "They often do this by sending fake emails or messages that look like they're from a real company, like your bank or a social media site.",
+        "These messages might create a sense of urgency, telling you to 'act now' to avoid your account being closed. They often contain links to fake websites.",
+        "A key way to protect yourself is to always check the sender's email address. Scammers often use addresses that are very similar to real ones, but with small changes. Also, hover over links before you click to see the actual web address they lead to.",
+    ],
+    quiz: [
+        {
+            question: "You receive an email from 'yourbank.co' instead of 'yourbank.com' asking you to urgently update your password. What should you do?",
+            options: [
+                "Click the link and update your password immediately.",
+                "Reply to the email with your password to save time.",
+                "Delete the email and report it as phishing.",
+                "Call the number provided in the email to verify."
+            ],
+            correctAnswer: "Delete the email and report it as phishing.",
+            explanation: "This is a classic phishing attempt. The slightly incorrect domain name is a major red flag. Never click links or call numbers in suspicious emails. Instead, go to the official website or use a trusted phone number."
+        }
+    ]
   },
   {
     id: 'malware',
     title: 'Malware & Ransomware',
     Icon: Bug,
-    content:
-      "Malware is software intentionally designed to cause damage to a computer, server, client, or computer network. Ransomware is a type of malware that threatens to publish the victim's data or perpetually block access to it unless a ransom is paid. Use antivirus software, keep your systems updated, and be cautious about downloading files from the internet.",
+    content: [
+      "Let's talk about Malware. 'Malware' is short for 'malicious software'. It's a program designed to disrupt computer operations, gather sensitive information, or gain access to private computer systems.",
+      "Viruses, spyware, and trojans are all types of malware. A particularly nasty type is Ransomware.",
+      "Ransomware encrypts your files, making them inaccessible. The attackers then demand a ransom payment, usually in cryptocurrency, to give you the decryption key.",
+      "To stay safe, use reputable antivirus software, keep your operating system and apps updated, and be extremely cautious about downloading files or clicking on ads from untrusted sources."
+    ],
+    quiz: [
+        {
+            question: "What is the primary goal of ransomware?",
+            options: [
+                "To steal your personal identity.",
+                "To encrypt your files and demand payment for their release.",
+                "To slow down your computer.",
+                "To show you advertisements."
+            ],
+            correctAnswer: "To encrypt your files and demand payment for their release.",
+            explanation: "Ransomware's main purpose is to hold your data hostage. It encrypts your files and demands a ransom to restore your access."
+        }
+    ]
   },
   {
     id: 'password-security',
     title: 'Password Security',
     Icon: KeyRound,
-    content:
-      'Strong passwords are your first line of defense. A strong password should be long (at least 12 characters), complex (using a mix of upper and lower case letters, numbers, and symbols), and unique for each account. Consider using a password manager to generate and store complex passwords securely.',
+    content: [
+        "Passwords are the keys to your digital life, so let's make them strong!",
+        "A strong password acts as a difficult barrier for attackers. The best passwords are long, complex, and unique.",
+        "Aim for at least 12-16 characters. Use a mix of uppercase letters, lowercase letters, numbers, and symbols (like !@#$%).",
+        "Crucially, never reuse passwords across different websites. If one site is breached, attackers will try that same password everywhere else.",
+        "Since remembering dozens of complex, unique passwords is impossible, use a password manager! These tools generate and securely store your passwords for you."
+    ],
+    quiz: [
+        {
+            question: "Which of the following is the strongest password?",
+            options: [
+                "password123",
+                "MyDogFido",
+                "Tr0ub4dor&3",
+                "J@nuary2024!"
+            ],
+            correctAnswer: "Tr0ub4dor&3",
+            explanation: "'Tr0ub4dor&3' is a good example of a strong password because it uses a mix of character types and isn't a common word. While 'J@nuary2024!' is also good, it is tied to a specific date which can be easier to guess."
+        }
+    ]
   },
   {
     id: 'social-engineering',
     title: 'Social Engineering',
     Icon: Users,
-    content:
-      'Social engineering is the art of manipulating people into giving up confidential information. Attackers might pretend to be a colleague or IT support to trick you. Always be skeptical of unsolicited requests for information, and verify the person\'s identity through a separate communication channel if you are unsure.',
+    content: [
+      "Social engineering is the art of psychological manipulation. Attackers use it to trick people into divulging confidential information or performing actions.",
+      "Instead of hacking systems, they 'hack' humans. They might pretend to be a coworker, an IT help desk employee, or even a senior executive.",
+      "They exploit human trust, fear, and curiosity. For example, they might drop a USB stick labeled 'Salaries' in an office parking lot, knowing someone will be curious enough to plug it in.",
+      "Always be wary of unexpected requests, especially those that create a sense of urgency or pressure. Verify the person's identity through a separate, trusted channel before complying."
+    ],
+    quiz: [
+      {
+        question: "An attacker calls you pretending to be from IT support and asks for your password to fix an 'urgent issue'. This is an example of:",
+        options: [
+          "Ransomware",
+          "A Denial-of-Service attack",
+          "Social Engineering",
+          "A phishing email"
+        ],
+        correctAnswer: "Social Engineering",
+        explanation: "This is social engineering. The attacker is manipulating you by pretending to be someone trustworthy to trick you into giving up your password. A real IT department will never ask for your password."
+      }
+    ]
   },
   {
-    id: '2fa',
-    title: 'Two-Factor Authentication (2FA)',
-    Icon: ShieldCheck,
-    content:
-      'Two-Factor Authentication adds a second layer of security to your accounts. Even if someone steals your password, they won\'t be able to log in without the second factor, which could be a code from your phone, a fingerprint, or a physical security key. Enable 2FA on all your important accounts.',
-  },
-  {
-    id: 'secure-wifi',
-    title: 'Secure Wi-Fi Usage',
-    Icon: Wifi,
-    content:
-      'Public Wi-Fi networks are often unsecured, making it easy for attackers to intercept your data. Avoid accessing sensitive information like bank accounts on public Wi-Fi. If you must use it, use a Virtual Private Network (VPN) to encrypt your internet traffic and protect your data from prying eyes.',
-  },
-  {
-    id: 'data-privacy',
-    title: 'Data Privacy & Encryption',
-    Icon: Lock,
-    content:
-      "Encryption scrambles your data so that only authorized parties can understand it. It's crucial for protecting data both in transit (e.g., over the internet) and at rest (e.g., on your hard drive). Use encrypted messaging apps and ensure your hard drive is encrypted to protect your privacy.",
-  },
-  {
-    id: 'reporting-scams',
-    title: 'Recognizing & Reporting Scams',
-    Icon: AlertTriangle,
-    content:
-      'Scams can come in many forms, from fake lottery winnings to tech support scams. Common red flags include a sense of urgency, requests for payment in gift cards, and offers that seem too good to be true. If you encounter a scam, report it to the relevant authorities to help protect others.',
-  },
-  {
-    id: 'cloud-security',
-    title: 'Cloud Security',
-    Icon: Cloud,
-    content:
-      'While cloud services are convenient, they also present security challenges. It\'s important to configure your cloud storage settings correctly to avoid exposing data publicly. Use strong, unique passwords and enable 2FA for your cloud accounts. Regularly review who has access to your shared files and folders.',
-  },
-  {
-    id: 'mobile-security',
-    title: 'Mobile Security',
-    Icon: Smartphone,
-    content:
-      'Our smartphones contain a wealth of personal information. Protect your device with a strong passcode or biometric lock. Only download apps from official app stores (Google Play Store, Apple App Store) and review app permissions carefully. Keep your phone\'s operating system updated to receive the latest security patches.',
-  },
-  {
-    id: 'iot-security',
-    title: 'IoT Security',
-    Icon: Router,
-    content:
-      'Internet of Things (IoT) devices, like smart speakers and cameras, can be vulnerable to attacks. Change the default username and password on all your IoT devices. Keep their firmware updated and, if possible, place them on a separate Wi-Fi network from your main computer and phone to limit potential damage.',
-  },
-  {
-    id: 'physical-security',
-    title: 'Physical Security',
-    Icon: Building,
-    content:
-      'Cybersecurity isn\'t just about digital threats. Physical security is also vital. Lock your computer when you step away, be aware of "shoulder surfing" (people watching over your shoulder), and securely dispose of sensitive documents by shredding them. Never leave devices like laptops or phones unattended in public places.',
+    id: 'ip-address',
+    title: "What's My IP?",
+    Icon: Network,
+    content: [
+      "Let's learn about your IP Address. 'IP' stands for 'Internet Protocol'.",
+      "Think of an IP address like a mailing address for your computer on the internet. It's a unique string of numbers that identifies your device so it can send and receive data online.",
+      "There are two main types: IPv4 (like 192.168.1.1) and the newer, longer IPv6. Every device connected to the internet has one.",
+      "Your IP address can reveal your general geographic location (country, city), which is used by websites to serve you relevant content. However, it doesn't reveal your name or home address.",
+      "When you're at home, all your devices usually share one public IP address assigned by your Internet Service Provider (ISP). At a coffee shop, you share their IP address with everyone else there."
+    ],
+    quiz: [
+      {
+        question: "What is an IP address most similar to?",
+        options: [
+          "Your computer's name",
+          "Your email address",
+          "A postal mailing address",
+          "Your phone number"
+        ],
+        correctAnswer: "A postal mailing address",
+        explanation: "An IP address works like a mailing address, allowing data to be sent to and from the correct device on the vast network of the internet."
+      }
+    ]
   },
 ];

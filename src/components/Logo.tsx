@@ -5,12 +5,12 @@ export function Logo({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        'flex items-center gap-2 text-lg font-bold font-headline tracking-wider',
+        'flex items-center gap-2 text-xl font-bold font-headline tracking-wider',
         className
       )}
     >
-      <ShieldCheck className="h-6 w-6 text-current" />
-      <span>CyberLearnHQ</span>
+      <ShieldCheck className="h-7 w-7 text-current" />
+      <span>CyberLearn</span>
     </div>
   );
 }
