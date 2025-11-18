@@ -17,8 +17,8 @@ export default function DashboardPage() {
         <TabsTrigger value="assistant" className="h-10 text-sm">
           <Bot className="mr-2" /> AI Assistant
         </TabsTrigger>
-        <TabsTrigger value="lab" className="h-10 text-sm">
-            <TestTube2 className="mr-2" /> Lab
+        <TabsTrigger value="test" className="h-10 text-sm">
+            <TestTube2 className="mr-2" /> Test
         </TabsTrigger>
         <TabsTrigger value="account" className="h-10 text-sm">
           <User className="mr-2" /> Account
@@ -31,7 +31,7 @@ export default function DashboardPage() {
       <TabsContent value="assistant" className="mt-6">
         <AiAssistant />
       </TabsContent>
-       <TabsContent value="lab" className="mt-6">
+       <TabsContent value="test" className="mt-6">
         <Lab />
       </TabsContent>
       <TabsContent value="account" className="mt-6">
