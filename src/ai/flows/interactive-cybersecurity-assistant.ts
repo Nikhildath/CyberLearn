@@ -32,7 +32,14 @@ const interactiveCybersecurityAssistantFlow = ai.defineFlow(
     inputSchema: InteractiveCybersecurityAssistantInputSchema,
     outputSchema: InteractiveCybersecurityAssistantOutputSchema,
   },
-  async (query) => {
+  async ({ query }) => {
+    // 1. Generate a text answer to the user's query.
+    const answerResponse = await ai.generate({
+      prompt: `You are a cybersecurity expert. Answer the following question: ${query}`,
+    });
+    const answer = answerResponse.text;
+
+    // 2. Convert the text answer to speech.
     const { media } = await ai.generate({
       model: googleAI.model('gemini-2.5-flash-preview-tts'),
       config: {
@@ -43,8 +50,9 @@ const interactiveCybersecurityAssistantFlow = ai.defineFlow(
           },
         },
       },
-      prompt: query.query,
+      prompt: answer,
     });
+    
     if (!media) {
       throw new Error('no media returned');
     }
