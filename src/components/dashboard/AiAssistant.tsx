@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, Mic, MicOff, Send } from 'lucide-react';
+import { Loader2, Mic, MicOff, Send, Bot } from 'lucide-react';
 import { interactiveCybersecurityAssistant } from '@/ai/flows/interactive-cybersecurity-assistant';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
