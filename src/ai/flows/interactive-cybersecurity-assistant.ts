@@ -14,11 +14,13 @@ import wav from 'wav';
 
 const InteractiveCybersecurityAssistantInputSchema = z.object({
   query: z.string().describe('The cybersecurity-related question from the user.'),
+  outputFormat: z.enum(['audio', 'text']).default('text').describe('The desired output format.'),
 });
 export type InteractiveCybersecurityAssistantInput = z.infer<typeof InteractiveCybersecurityAssistantInputSchema>;
 
 const InteractiveCybersecurityAssistantOutputSchema = z.object({
-  media: z.string().describe('The audio data of the AI assistant response in WAV format.'),
+  media: z.string().optional().describe('The audio data of the AI assistant response in WAV format.'),
+  text: z.string().optional().describe('The text response from the assistant.'),
 });
 export type InteractiveCybersecurityAssistantOutput = z.infer<typeof InteractiveCybersecurityAssistantOutputSchema>;
 
@@ -32,12 +34,16 @@ const interactiveCybersecurityAssistantFlow = ai.defineFlow(
     inputSchema: InteractiveCybersecurityAssistantInputSchema,
     outputSchema: InteractiveCybersecurityAssistantOutputSchema,
   },
-  async ({ query }) => {
+  async ({ query, outputFormat }) => {
     // 1. Generate a text answer to the user's query.
     const answerResponse = await ai.generate({
       prompt: `You are a cybersecurity expert. Answer the following question: ${query}`,
     });
     const answer = answerResponse.text;
+
+    if (outputFormat === 'text') {
+      return { text: answer };
+    }
 
     // 2. Convert the text answer to speech.
     const { media } = await ai.generate({
@@ -61,6 +67,7 @@ const interactiveCybersecurityAssistantFlow = ai.defineFlow(
       'base64'
     );
     return {
+      text: answer,
       media: 'data:audio/wav;base64,' + (await toWav(audioBuffer)),
     };
   }

@@ -15,6 +15,7 @@ export function AiAssistant() {
   const [isThinking, setIsThinking] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [transcript, setTranscript] = useState('');
+  const [responseText, setResponseText] = useState('');
   const [inputValue, setInputValue] = useState('');
   const [responseAudio, setResponseAudio] = useState<string | null>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
@@ -102,8 +103,8 @@ export function AiAssistant() {
   }, [toast]);
 
   useEffect(() => {
-      if (!isRecording && inputValue.trim() && !responseAudio) {
-          processRequest(inputValue);
+      if (!isRecording && inputValue.trim() && !responseAudio && !responseText) {
+          processRequest(inputValue, 'audio');
       }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isRecording]);
@@ -115,6 +116,7 @@ export function AiAssistant() {
       setTranscript('');
       setInputValue('');
       setResponseAudio(null);
+      setResponseText('');
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current.currentTime = 0;
@@ -128,19 +130,24 @@ export function AiAssistant() {
   const handleFormSubmit = (e: React.FormEvent) => {
       e.preventDefault();
       if (inputValue.trim()) {
-          processRequest(inputValue);
+          processRequest(inputValue, 'text');
       }
   }
 
-  const processRequest = async (query: string) => {
+  const processRequest = async (query: string, format: 'audio' | 'text') => {
     if(!query) return;
     setTranscript(query);
     setInputValue('');
     setIsThinking(true);
     try {
-      const result = await interactiveCybersecurityAssistant({ query });
-      setResponseAudio(result.media);
-      // The audio element will auto-play
+      const result = await interactiveCybersecurityAssistant({ query, outputFormat: format });
+      if (result.media) {
+        setResponseAudio(result.media);
+      }
+      if(result.text) {
+        setResponseText(result.text);
+      }
+      // The audio element will auto-play if src is set
     } catch (error) {
       console.error('AI assistant error:', error);
       toast({
@@ -167,11 +174,27 @@ export function AiAssistant() {
     setTimeout(() => {
         setTranscript('');
         setResponseAudio(null);
+        setResponseText('');
     }, 500);
   }
 
-  const state = isRecording ? 'recording' : isThinking ? 'thinking' : (responseAudio && isPlaying) ? 'speaking' : 'idle';
+  const state = isRecording ? 'recording' : isThinking ? 'thinking' : (responseAudio && isPlaying) ? 'speaking' : responseText ? 'text-reply' : 'idle';
   const averageAmplitude = audioData.length > 0 ? audioData.reduce((a, b) => a + b) / audioData.length : 0;
+
+  const getDisplayMessage = () => {
+      if (state === 'text-reply') return responseText;
+      if (transcript) return transcript;
+      return <span className="text-muted-foreground">
+          {
+              {
+                  'recording': 'Listening...',
+                  'thinking': 'Thinking...',
+                  'speaking': 'Here is my response...',
+                  'idle': 'Ask me anything...'
+              }[state] || 'Ask me anything...'
+          }
+      </span>;
+  }
 
   return (
     <Card className="flex h-[70vh] flex-col bg-card/50 border-border/50 shadow-xl">
@@ -184,14 +207,15 @@ export function AiAssistant() {
       <CardContent className="flex-grow flex flex-col items-center justify-center space-y-4 text-center">
         
         <div className="relative w-48 h-48 flex items-center justify-center">
-            <ParticleCanvas state={state} amplitude={averageAmplitude} />
+            <ParticleCanvas state={state as any} amplitude={averageAmplitude} />
              <div className="z-10 text-white">
                 {
                     {
                         'recording': <MicOff size={48} />,
                         'thinking': <Loader2 size={48} className="animate-spin" />,
                         'speaking': <div className="h-12 w-12 rounded-full border-4 border-white/50 animate-pulse" />,
-                        'idle': <Bot size={48} />
+                        'idle': <Bot size={48} />,
+                        'text-reply': <Bot size={48} />
                     }[state]
                 }
             </div>
@@ -199,16 +223,7 @@ export function AiAssistant() {
 
         <div className="min-h-[72px] w-full text-center flex items-center justify-center p-4">
           <p className="text-lg font-medium text-foreground transition-opacity duration-300">
-            {transcript || <span className="text-muted-foreground">
-                {
-                    {
-                        'recording': 'Listening...',
-                        'thinking': 'Thinking...',
-                        'speaking': 'Here is my response...',
-                        'idle': 'Ask me anything...'
-                    }[state]
-                }
-            </span>}
+            {getDisplayMessage()}
             </p>
         </div>
 
