@@ -5,6 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter, CardDescription }
 import { Button } from '@/components/ui/button';
 import { Loader2, Mic, MicOff, Send, Bot } from 'lucide-react';
 import { interactiveCybersecurityAssistant } from '@/ai/flows/interactive-cybersecurity-assistant';
+import { speechToText } from '@/ai/flows/speech-to-text';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { ParticleCanvas } from './ParticleCanvas';
@@ -33,12 +34,15 @@ function MarkdownRenderer({ content }: { content: string }) {
 export function AiAssistant() {
   const [isRecording, setIsRecording] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [responseText, setResponseText] = useState('');
   const [inputValue, setInputValue] = useState('');
   const [responseAudio, setResponseAudio] = useState<string | null>(null);
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -72,67 +76,68 @@ export function AiAssistant() {
     animate();
   }, []);
 
-  useEffect(() => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      toast({
-        variant: 'destructive',
-        title: 'Browser Not Supported',
-        description: 'Speech recognition is not supported here. Please use a modern browser like Chrome.',
-      });
-      return;
+  const startRecording = async () => {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const recorder = new MediaRecorder(stream);
+        mediaRecorderRef.current = recorder;
+        audioChunksRef.current = [];
+
+        recorder.ondataavailable = (event) => {
+            audioChunksRef.current.push(event.data);
+        };
+
+        recorder.onstop = async () => {
+            const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+            const reader = new FileReader();
+            reader.readAsDataURL(audioBlob);
+            reader.onloadend = async () => {
+                const base64Audio = reader.result as string;
+                setIsTranscribing(true);
+                try {
+                    const result = await speechToText({ audioDataUri: base64Audio, apiKey });
+                    if (result && result.transcript) {
+                        setInputValue(result.transcript);
+                        processRequest(result.transcript, 'audio');
+                    } else {
+                        toast({ title: "Transcription failed", description: "Could not transcribe audio."});
+                    }
+                } catch (error) {
+                    console.error("Transcription error:", error);
+                    toast({ title: "Transcription Error", description: "Failed to process audio.", variant: 'destructive'});
+                } finally {
+                    setIsTranscribing(false);
+                }
+            };
+            stream.getTracks().forEach(track => track.stop());
+        };
+
+        recorder.start();
+        setIsRecording(true);
+    } catch (error) {
+        console.error("Error starting recording:", error);
+        toast({ title: "Microphone Error", description: "Could not access microphone.", variant: 'destructive' });
     }
+  };
 
-    const recognition = new SpeechRecognition();
-    recognition.continuous = false;
-    recognition.interimResults = true;
-    recognition.lang = 'en-US';
-
-    recognition.onresult = (event) => {
-      let interim = '';
-      let final = '';
-      for (let i = 0; i < event.results.length; i++) {
-        if (event.results[i].isFinal) {
-          final += event.results[i][0].transcript;
-        } else {
-          interim += event.results[i][0].transcript;
-        }
+  const stopRecording = () => {
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
+          mediaRecorderRef.current.stop();
       }
-      setInputValue(final + interim);
-    };
-
-    recognition.onend = () => {
       setIsRecording(false);
-    }
-
-    recognition.onerror = (event) => {
-      toast({
-        variant: 'destructive',
-        title: 'Speech Recognition Error',
-        description: `Error: ${event.error}`,
-      });
-      setIsRecording(false);
-    };
-
-    recognitionRef.current = recognition;
-
+  };
+  
+  useEffect(() => {
     return () => {
-      recognition.stop();
       if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
       audioContextRef.current?.close();
     };
-  }, [toast]);
+  }, []);
 
-  useEffect(() => {
-      if (!isRecording && inputValue.trim() && !responseAudio && !responseText) {
-          processRequest(inputValue, 'audio');
-      }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isRecording]);
 
   const handleToggleRecording = () => {
     if (isRecording) {
-      recognitionRef.current?.stop();
+      stopRecording();
     } else {
       setTranscript('');
       setInputValue('');
@@ -143,8 +148,7 @@ export function AiAssistant() {
         audioRef.current.currentTime = 0;
       }
       setIsPlaying(false);
-      recognitionRef.current?.start();
-      setIsRecording(true);
+      startRecording();
     }
   };
   
@@ -182,7 +186,6 @@ export function AiAssistant() {
       } else {
          throw new Error("The AI assistant returned an empty response.");
       }
-      // The audio element will auto-play if src is set
     } catch (error) {
       console.error('AI assistant error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Could not get a response from the assistant.';
@@ -214,7 +217,7 @@ export function AiAssistant() {
     }, 500);
   }
 
-  const state = isRecording ? 'recording' : isThinking ? 'thinking' : (responseAudio && isPlaying) ? 'speaking' : responseText ? 'text-reply' : 'idle';
+  const state = isRecording ? 'recording' : isTranscribing ? 'thinking' : isThinking ? 'thinking' : (responseAudio && isPlaying) ? 'speaking' : responseText ? 'text-reply' : 'idle';
   const averageAmplitude = audioData.length > 0 ? audioData.reduce((a, b) => a + b) / audioData.length : 0;
 
   const getDisplayMessage = () => {
@@ -224,7 +227,7 @@ export function AiAssistant() {
           {
               {
                   'recording': 'Listening...',
-                  'thinking': 'Thinking...',
+                  'thinking': isTranscribing ? 'Transcribing...' : 'Thinking...',
                   'speaking': 'Here is my response...',
                   'idle': 'Ask me anything...'
               }[state] || 'Ask me anything...'
@@ -271,7 +274,7 @@ export function AiAssistant() {
                 className="flex-1 h-12 text-base bg-white"
                 value={inputValue}
                 onChange={e => setInputValue(e.target.value)}
-                disabled={isThinking || isRecording}
+                disabled={isThinking || isRecording || isTranscribing}
             />
             <Button
                 type="button"
@@ -281,7 +284,7 @@ export function AiAssistant() {
                     state === 'recording' && 'bg-red-500/80 hover:bg-red-600/80',
                     state !== 'recording' && 'bg-primary hover:bg-primary/90'
                 )}
-                disabled={isThinking}
+                disabled={isThinking || isTranscribing}
                 aria-label={isRecording ? "Stop recording" : "Start recording"}
             >
                 {isRecording ? <MicOff size={24} /> : <Mic size={24} />}
@@ -290,7 +293,7 @@ export function AiAssistant() {
                 type="submit"
                 size="icon"
                 className="h-12 w-12 shrink-0"
-                disabled={isThinking || isRecording || !inputValue.trim()}
+                disabled={isThinking || isRecording || isTranscribing || !inputValue.trim()}
             >
                 <Send size={24} />
             </Button>
