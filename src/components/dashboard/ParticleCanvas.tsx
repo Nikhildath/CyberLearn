@@ -31,6 +31,7 @@ export const ParticleCanvas = ({ state, amplitude }: { state: 'idle' | 'recordin
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesArray = useRef<Particle[]>([]);
   const mouse = useRef({ x: 0, y: 0, radius: 40 });
+  const animationFrameId = useRef<number | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -38,7 +39,6 @@ export const ParticleCanvas = ({ state, amplitude }: { state: 'idle' | 'recordin
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     
-    let animationFrameId: number;
     const dpr = window.devicePixelRatio || 1;
     const canvasSize = 192;
     canvas.width = canvasSize * dpr;
@@ -47,19 +47,9 @@ export const ParticleCanvas = ({ state, amplitude }: { state: 'idle' | 'recordin
     canvas.style.height = `${canvasSize}px`;
     ctx.scale(dpr, dpr);
     
-    // Fill the background of the canvas
-    if (state === 'speaking') {
-      const gradient = ctx.createRadialGradient(canvasSize/2, canvasSize/2, 0, canvasSize/2, canvasSize/2, canvasSize/2);
-      gradient.addColorStop(0, 'hsl(195, 85%, 35%)');
-      gradient.addColorStop(1, 'hsl(195, 85%, 25%)');
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, canvasSize, canvasSize);
-    }
-
-
     const init = () => {
       particlesArray.current = [];
-      const radius = 60; // radius of the circle
+      const radius = 60;
       const numParticles = 150;
       const colors = state === 'speaking' ? colorsSpeaking : colorsLight;
 
@@ -83,8 +73,8 @@ export const ParticleCanvas = ({ state, amplitude }: { state: 'idle' | 'recordin
       ctx.clearRect(0, 0, canvasSize, canvasSize);
       if (state === 'speaking') {
         const gradient = ctx.createRadialGradient(canvasSize/2, canvasSize/2, 0, canvasSize/2, canvasSize/2, canvasSize/1.5);
-        gradient.addColorStop(0, 'hsl(195, 85%, 40%)');
-        gradient.addColorStop(1, 'hsl(195, 85%, 30%)');
+        gradient.addColorStop(0, 'hsl(var(--primary))');
+        gradient.addColorStop(1, 'hsl(var(--primary) / 0.8)');
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, canvasSize, canvasSize);
       }
@@ -108,7 +98,7 @@ export const ParticleCanvas = ({ state, amplitude }: { state: 'idle' | 'recordin
             p.x = canvasSize / 2 + Math.cos(Date.now() / 800 + i) * newRadius;
             p.y = canvasSize / 2 + Math.sin(Date.now() / 800 + i) * newRadius;
         } else if (state === 'speaking') {
-            const ampFactor = amplitude / 128; // Normalize amplitude
+            const ampFactor = amplitude / 128;
             const angle = (i / particlesArray.current.length) * Math.PI * 2;
             const newRadius = 60 + ampFactor * 30 + Math.sin(Date.now() / 200 + i) * 5;
             p.x = canvasSize / 2 + Math.cos(angle + Date.now()/1000) * newRadius;
@@ -140,24 +130,27 @@ export const ParticleCanvas = ({ state, amplitude }: { state: 'idle' | 'recordin
         ctx.fillStyle = p.color;
         ctx.fill();
       }
-      animationFrameId = requestAnimationFrame(animate);
+      animationFrameId.current = requestAnimationFrame(animate);
     };
 
     const handleMouseMove = (event: MouseEvent) => {
-        if (!canvas) return;
-        const rect = canvas.getBoundingClientRect();
+        if (!canvasRef.current) return;
+        const rect = canvasRef.current.getBoundingClientRect();
         mouse.current.x = (event.clientX - rect.left);
         mouse.current.y = (event.clientY - rect.top);
     };
     
     init();
+    if(animationFrameId.current) {
+      cancelAnimationFrame(animationFrameId.current)
+    }
     animate();
 
-    const canvasElem = canvas;
+    const canvasElem = canvasRef.current;
     canvasElem.addEventListener('mousemove', handleMouseMove);
 
     return () => {
-      cancelAnimationFrame(animationFrameId);
+      if(animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
       canvasElem.removeEventListener('mousemove', handleMouseMove);
     };
   }, [state, amplitude]);
