@@ -240,9 +240,9 @@ export function AiAssistant() {
           Ask any cybersecurity question. Use your voice or type below.
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex-grow flex flex-col items-center justify-center space-y-4 text-center">
+      <CardContent className="flex-grow flex flex-col items-center justify-start space-y-4 text-center p-4">
         
-        <div className="relative w-36 h-36 sm:w-48 sm:h-48 flex items-center justify-center">
+        <div className="relative w-36 h-36 sm:w-48 sm:h-48 flex items-center justify-center shrink-0">
             <ParticleCanvas state={state as any} amplitude={averageAmplitude} />
              <div className={cn("z-10", state==='speaking' ? 'text-white' : 'text-primary')}>
                 {
@@ -257,8 +257,8 @@ export function AiAssistant() {
             </div>
         </div>
 
-        <ScrollArea className="h-40 w-full rounded-lg border border-border/50 bg-background p-4">
-            <div className="min-h-[72px] w-full text-center flex items-center justify-center p-4">
+        <ScrollArea className="w-full flex-grow rounded-lg border border-border/50 bg-background">
+            <div className="min-h-full w-full text-center flex items-center justify-center p-4">
                 {getDisplayMessage()}
             </div>
         </ScrollArea>
