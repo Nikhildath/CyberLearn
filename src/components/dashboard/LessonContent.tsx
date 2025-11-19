@@ -166,7 +166,7 @@ export function LessonContent({ lesson, onComplete }: { lesson: Lesson | null, o
 
   return (
     <div className="flex h-full flex-col">
-        <DialogHeader className="p-4 border-b border-border/50">
+        <DialogHeader className="p-6 border-b border-border/50 relative">
             <div className="flex items-center gap-4">
                 <lesson.Icon className="h-8 w-8 text-primary flex-shrink-0" />
                 <div>
@@ -174,10 +174,6 @@ export function LessonContent({ lesson, onComplete }: { lesson: Lesson | null, o
                     <DialogDescription className="text-sm text-muted-foreground">Interactive Learning Module</DialogDescription>
                 </div>
             </div>
-            <Button variant="ghost" size="icon" onClick={onComplete} className="absolute right-4 top-4">
-                <X className="h-5 w-5"/>
-                <span className="sr-only">Close</span>
-            </Button>
         </DialogHeader>
         <ScrollArea className="flex-grow">
             {renderContent()}
