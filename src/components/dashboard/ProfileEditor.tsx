@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { useAuth, UserProfile } from '@/context/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';

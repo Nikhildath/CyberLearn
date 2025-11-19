@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { Loader2, LogOut } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { lessons } from '@/lib/lessons';
 import {
   SidebarProvider,
@@ -24,9 +24,6 @@ import { ProfileEditor } from '@/components/dashboard/ProfileEditor';
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
 } from '@/components/ui/dialog';
 import { LessonContent } from '@/components/dashboard/LessonContent';
 import { Lesson } from '@/lib/lessons';
@@ -113,7 +110,7 @@ export default function DashboardLayout({
       </SidebarInset>
 
       <Dialog open={!!selectedLesson} onOpenChange={(isOpen) => !isOpen && setSelectedLesson(null)}>
-        <DialogContent className="max-w-4xl h-[90vh] flex flex-col bg-card border-border">
+        <DialogContent className="max-w-4xl h-[90vh] flex flex-col bg-card border-border p-0">
             {selectedLesson && <LessonContent lesson={selectedLesson} onComplete={() => setSelectedLesson(null)} />}
         </DialogContent>
       </Dialog>

@@ -5,7 +5,6 @@ import { lessons } from '@/lib/lessons';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { CheckCircle, XCircle, Trophy } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
-import { useRouter } from 'next/navigation';
 import { Button } from '../ui/button';
 import { useState } from 'react';
 import { LessonContent } from './LessonContent';

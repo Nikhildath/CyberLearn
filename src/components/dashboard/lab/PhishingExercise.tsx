@@ -3,11 +3,10 @@
 import { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { AlertCircle, CheckCircle, Mail, Send, ShieldCheck, ShieldOff } from 'lucide-react';
+import { AlertCircle, CheckCircle, Send, ShieldCheck, ShieldOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar';
-import { Separator } from '../../ui/separator';
+import { Avatar, AvatarFallback } from '../../ui/avatar';
 
 const emails = [
   {
