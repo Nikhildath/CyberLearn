@@ -233,7 +233,7 @@ export function AiAssistant() {
   }
 
   return (
-    <Card className="flex h-[70vh] flex-col border-border/60 shadow-xl">
+    <Card className="flex flex-col border-border/60 shadow-xl h-full min-h-[600px] md:min-h-0 md:h-[calc(100vh-12rem)]">
       <CardHeader>
         <CardTitle className="font-headline text-2xl text-primary">Interactive AI Assistant</CardTitle>
         <CardDescription>
@@ -242,7 +242,7 @@ export function AiAssistant() {
       </CardHeader>
       <CardContent className="flex-grow flex flex-col items-center justify-center space-y-4 text-center">
         
-        <div className="relative w-48 h-48 flex items-center justify-center">
+        <div className="relative w-36 h-36 sm:w-48 sm:h-48 flex items-center justify-center">
             <ParticleCanvas state={state as any} amplitude={averageAmplitude} />
              <div className={cn("z-10", state==='speaking' ? 'text-white' : 'text-primary')}>
                 {
@@ -277,7 +277,7 @@ export function AiAssistant() {
                 type="button"
                 onClick={handleToggleRecording}
                 size="icon"
-                className={cn('h-12 w-12 transition-all duration-300 z-10 text-white',
+                className={cn('h-12 w-12 shrink-0 transition-all duration-300 z-10 text-white',
                     state === 'recording' && 'bg-red-500/80 hover:bg-red-600/80',
                     state !== 'recording' && 'bg-primary hover:bg-primary/90'
                 )}
@@ -289,7 +289,7 @@ export function AiAssistant() {
             <Button
                 type="submit"
                 size="icon"
-                className="h-12 w-12"
+                className="h-12 w-12 shrink-0"
                 disabled={isThinking || isRecording || !inputValue.trim()}
             >
                 <Send size={24} />
