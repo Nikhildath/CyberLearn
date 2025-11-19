@@ -98,7 +98,7 @@ export default function DashboardLayout({
           </SidebarFooter>
         </Sidebar>
         
-        <div className="flex flex-1 flex-col min-w-0">
+        <div className="flex flex-1 flex-col w-full min-w-0">
             <header className="flex h-16 items-center justify-between gap-4 border-b border-border/50 bg-background/80 backdrop-blur-sm px-4 lg:px-6 sticky top-0 z-30">
                 <div className="flex items-center gap-2">
                     <h1 className="text-xl font-semibold font-headline text-foreground">Cyber Security Training</h1>
