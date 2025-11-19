@@ -20,10 +20,14 @@ function getApiKeys(): string[] {
 
 const apiKeys = getApiKeys();
 
-function getApiKey(): string | undefined {
+function getApiKey(): string {
   if (apiKeys.length === 0) {
-    return undefined;
+    // Return a dummy key or throw an error if no keys are found
+    // This prevents the app from crashing if .env is not set up
+    console.warn("No GEMINI_API_KEY found in .env. Using a placeholder. AI calls will fail.");
+    return "NO_API_KEY_FOUND";
   }
+  // Select a random key from the pool
   const randomIndex = Math.floor(Math.random() * apiKeys.length);
   return apiKeys[randomIndex];
 }
@@ -31,7 +35,7 @@ function getApiKey(): string | undefined {
 export const ai = genkit({
   plugins: [
     googleAI({
-      apiKey: getApiKey,
+      apiKey: getApiKey(), // Execute the function to get the key string
     }),
   ],
 });
