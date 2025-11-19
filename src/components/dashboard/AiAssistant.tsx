@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { ParticleCanvas } from './ParticleCanvas';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '../ui/scroll-area';
+import { useAuth } from '@/context/AuthContext';
 
 function MarkdownRenderer({ content }: { content: string }) {
   // A simple markdown renderer
@@ -44,6 +45,7 @@ export function AiAssistant() {
   const animationFrameRef = useRef<number | null>(null);
   const [audioData, setAudioData] = useState<Uint8Array>(new Uint8Array(0));
   const { toast } = useToast();
+  const { apiKey } = useAuth();
 
   const setupAudioAnalysis = useCallback(() => {
     if (!audioRef.current) return;
@@ -155,11 +157,21 @@ export function AiAssistant() {
 
   const processRequest = async (query: string, format: 'audio' | 'text') => {
     if(!query) return;
+
+    if (!apiKey) {
+      toast({
+        variant: 'destructive',
+        title: 'API Key Not Found',
+        description: 'Please add and select a Gemini API key in the Account settings.',
+      });
+      return;
+    }
+
     setTranscript(query);
     setInputValue('');
     setIsThinking(true);
     try {
-      const result = await interactiveCybersecurityAssistant({ query, outputFormat: format });
+      const result = await interactiveCybersecurityAssistant({ query, outputFormat: format, apiKey });
       if (result) {
           if (result.media) {
             setResponseAudio(result.media);
@@ -167,14 +179,17 @@ export function AiAssistant() {
           if(result.text) {
             setResponseText(result.text);
           }
+      } else {
+         throw new Error("The AI assistant returned an empty response.");
       }
       // The audio element will auto-play if src is set
     } catch (error) {
       console.error('AI assistant error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Could not get a response from the assistant.';
       toast({
         variant: 'destructive',
         title: 'AI Assistant Error',
-        description: 'Could not get a response from the assistant.',
+        description: errorMessage,
       });
       setTranscript('');
     } finally {

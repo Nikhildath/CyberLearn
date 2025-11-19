@@ -11,9 +11,29 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import wav from 'wav';
 
+// Tool to get the API key. In a real app, this would fetch from a secure secret manager.
+// For this demo, it's a placeholder. The actual implementation of this tool
+// is on the client-side, where it gets the key from localStorage.
+const getApiKey = ai.defineTool(
+  {
+    name: 'getApiKey',
+    description: 'Retrieves the stored Gemini API key.',
+    inputSchema: z.object({}),
+    outputSchema: z.string(),
+  },
+  async () => {
+    // This server-side implementation is a fallback.
+    // The client will intercept this and provide the key from localStorage.
+    console.warn("getApiKey tool was executed on the server. This should not happen in the app. No API key is available on the server.");
+    throw new Error("API key not available on the server.");
+  }
+);
+
+
 const InteractiveCybersecurityAssistantInputSchema = z.object({
   query: z.string().describe('The cybersecurity-related question from the user.'),
   outputFormat: z.enum(['audio', 'text']).default('text').describe('The desired output format.'),
+  apiKey: z.string().optional().describe("The user's Gemini API Key."),
 });
 export type InteractiveCybersecurityAssistantInput = z.infer<typeof InteractiveCybersecurityAssistantInputSchema>;
 
@@ -33,13 +53,22 @@ const interactiveCybersecurityAssistantFlow = ai.defineFlow(
     inputSchema: InteractiveCybersecurityAssistantInputSchema,
     outputSchema: InteractiveCybersecurityAssistantOutputSchema,
   },
-  async ({ query, outputFormat }) => {
+  async ({ query, outputFormat, apiKey }) => {
+    if (!apiKey) {
+        const message = "Gemini API key is not configured. Please add it in the Account Settings.";
+        console.error(message);
+        return { text: message };
+    }
+
     // 1. Generate a text answer to the user's query.
     const answerResponse = await ai.generate({
       model: 'googleai/gemini-2.5-flash',
       prompt: `You are a helpful and friendly cybersecurity expert. Answer the following question clearly and concisely. Use markdown for formatting, such as headings, bullet points, and bold text to make the information easy to digest.
 
 Question: "${query}"`,
+      config: {
+          apiKey: apiKey
+      }
     });
     
     const answer = answerResponse.text;
@@ -63,6 +92,7 @@ Question: "${query}"`,
             prebuiltVoiceConfig: { voiceName: 'Algenib' },
           },
         },
+        apiKey: apiKey,
       },
       prompt: answer,
     });
