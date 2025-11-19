@@ -1,5 +1,5 @@
 'use client';
-import { useState, useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useAuth, UserProfile } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -56,7 +56,7 @@ export function AccountSettings() {
   if (!user) return null;
 
   return (
-    <Card className="max-w-2xl mx-auto bg-card/50 border-border/50 shadow-xl">
+    <Card className="max-w-2xl mx-auto shadow-xl border-border/60">
         <CardHeader>
             <CardTitle className="font-headline text-2xl">Account Settings</CardTitle>
             <CardDescription>Manage your profile information.</CardDescription>
@@ -64,7 +64,7 @@ export function AccountSettings() {
         <CardContent className="space-y-8">
             <div className="flex flex-col items-center gap-4">
                  <button onClick={() => fileInputRef.current?.click()} className="relative group">
-                    <Avatar className="h-32 w-32 border-4 border-primary/50">
+                    <Avatar className="h-32 w-32 border-4 border-primary/20">
                         <AvatarImage src={avatar} />
                         <AvatarFallback className="bg-muted text-5xl">{username.charAt(0).toUpperCase()}</AvatarFallback>
                     </Avatar>

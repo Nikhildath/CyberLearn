@@ -14,7 +14,7 @@ import { Fish, Bug, KeyRound } from 'lucide-react';
 export function Lab() {
   return (
     <Accordion type="single" collapsible defaultValue="item-1" className="w-full space-y-4">
-      <AccordionItem value="item-1" className="border rounded-lg bg-card px-4">
+      <AccordionItem value="item-1" className="border rounded-lg bg-card px-4 shadow-sm">
         <AccordionTrigger className="text-xl font-headline data-[state=open]:text-primary hover:no-underline">
           <div className="flex items-center gap-3">
             <Fish className="h-6 w-6" />
@@ -25,7 +25,7 @@ export function Lab() {
           <PhishingExercise />
         </AccordionContent>
       </AccordionItem>
-      <AccordionItem value="item-2" className="border rounded-lg bg-card px-4">
+      <AccordionItem value="item-2" className="border rounded-lg bg-card px-4 shadow-sm">
         <AccordionTrigger className="text-xl font-headline data-[state=open]:text-primary hover:no-underline">
           <div className="flex items-center gap-3">
             <Bug className="h-6 w-6" />
@@ -36,7 +36,7 @@ export function Lab() {
           <MalwareSimulator />
         </AccordionContent>
       </AccordionItem>
-      <AccordionItem value="item-3" className="border rounded-lg bg-card px-4">
+      <AccordionItem value="item-3" className="border rounded-lg bg-card px-4 shadow-sm">
         <AccordionTrigger className="text-xl font-headline data-[state=open]:text-primary hover:no-underline">
           <div className="flex items-center gap-3">
             <KeyRound className="h-6 w-6" />

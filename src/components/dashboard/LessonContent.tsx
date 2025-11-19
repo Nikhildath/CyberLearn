@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { IpInfoCard } from './IpInfoCard';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
 
 export function LessonContent({ lesson, onComplete }: { lesson: Lesson | null, onComplete: () => void }) {
   const { updateLessonProgress } = useAuth();
@@ -59,7 +60,7 @@ export function LessonContent({ lesson, onComplete }: { lesson: Lesson | null, o
       toast({
         title: "Correct!",
         description: "Great job! You've completed this lesson.",
-        className: "bg-green-700/20 border-green-500"
+        className: "bg-green-100/20 border-green-500 text-green-700"
       });
     } else {
       setQuizResult('incorrect');
@@ -117,7 +118,7 @@ export function LessonContent({ lesson, onComplete }: { lesson: Lesson | null, o
                   "flex items-center space-x-3 p-4 rounded-lg border-2 transition-all",
                   quizResult && option === lesson.quiz[0].correctAnswer && "bg-green-500/10 border-green-500",
                   quizResult && option !== lesson.quiz[0].correctAnswer && selectedAnswer === option && "bg-red-500/10 border-red-500",
-                  !quizResult && "border-border/50 hover:bg-accent/50 hover:border-accent cursor-pointer",
+                  !quizResult && "border-border/50 hover:bg-accent hover:border-accent cursor-pointer",
                   !!quizResult && "cursor-not-allowed"
                 )}>
                   <RadioGroupItem value={option} id={`q1-o${index}`} className="h-5 w-5" />
@@ -136,10 +137,10 @@ export function LessonContent({ lesson, onComplete }: { lesson: Lesson | null, o
               {quizResult === 'incorrect' && (
                 <div className="p-4 rounded-md bg-yellow-500/10 border border-yellow-500/50">
                     <div className="flex items-start gap-3">
-                        <AlertTriangle className="h-5 w-5 text-yellow-400 mt-1 flex-shrink-0" />
+                        <AlertTriangle className="h-5 w-5 text-yellow-500 mt-1 flex-shrink-0" />
                         <div>
-                            <h4 className="font-semibold text-yellow-300">Review this concept:</h4>
-                            <p className="text-sm text-yellow-400/80">{lesson.quiz[0].explanation}</p>
+                            <h4 className="font-semibold text-yellow-600">Review this concept:</h4>
+                            <p className="text-sm text-yellow-700/80">{lesson.quiz[0].explanation}</p>
                         </div>
                     </div>
                     <Button onClick={handleRetryLesson} variant="outline" className="w-full mt-4 border-yellow-500/50 hover:bg-yellow-500/20">
@@ -150,8 +151,8 @@ export function LessonContent({ lesson, onComplete }: { lesson: Lesson | null, o
                {quizResult === 'correct' && (
                 <div className="p-4 rounded-md bg-green-500/10 border border-green-500/50 text-center">
                     <CheckCircle className="h-8 w-8 text-green-500 mx-auto mb-2" />
-                    <h4 className="font-semibold text-green-400">Lesson Complete!</h4>
-                    <p className="text-sm text-green-500/80">You've mastered the basics of {lesson.title}.</p>
+                    <h4 className="font-semibold text-green-600">Lesson Complete!</h4>
+                    <p className="text-sm text-green-700/80">You've mastered the basics of {lesson.title}.</p>
                      <Button onClick={onComplete} className="w-full mt-4">
                         Close Lesson
                     </Button>
@@ -165,19 +166,19 @@ export function LessonContent({ lesson, onComplete }: { lesson: Lesson | null, o
 
   return (
     <div className="flex h-full flex-col">
-        <div className="flex items-center justify-between p-4 border-b border-border/50">
+        <DialogHeader className="p-4 border-b border-border/50">
             <div className="flex items-center gap-4">
                 <lesson.Icon className="h-8 w-8 text-primary flex-shrink-0" />
                 <div>
-                    <h2 className="font-headline text-2xl text-primary">{lesson.title}</h2>
-                    <p className="text-sm text-muted-foreground">Interactive Learning Module</p>
+                    <DialogTitle className="font-headline text-2xl text-primary">{lesson.title}</DialogTitle>
+                    <DialogDescription className="text-sm text-muted-foreground">Interactive Learning Module</DialogDescription>
                 </div>
             </div>
-            <Button variant="ghost" size="icon" onClick={onComplete}>
+            <Button variant="ghost" size="icon" onClick={onComplete} className="absolute right-4 top-4">
                 <X className="h-5 w-5"/>
                 <span className="sr-only">Close</span>
             </Button>
-        </div>
+        </DialogHeader>
         <ScrollArea className="flex-grow">
             {renderContent()}
         </ScrollArea>

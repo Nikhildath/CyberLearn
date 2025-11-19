@@ -10,7 +10,7 @@ import { LayoutDashboard, Bot, User, TestTube2 } from 'lucide-react';
 export default function DashboardPage() {
   return (
     <Tabs defaultValue="dashboard" className="w-full">
-      <TabsList className="grid w-full grid-cols-4 h-16 bg-card border rounded-lg">
+      <TabsList className="grid w-full grid-cols-4 h-16 bg-card border rounded-lg shadow-sm">
         <TabsTrigger value="dashboard" className="h-12 text-sm gap-2">
           <LayoutDashboard className="h-5 w-5" /> <span>Dashboard</span>
         </TabsTrigger>

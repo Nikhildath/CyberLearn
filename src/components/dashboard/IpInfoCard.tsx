@@ -49,7 +49,7 @@ export function IpInfoCard({ lesson, onComplete }: { lesson: Lesson, onComplete:
   }, []);
 
   return (
-    <Card className="flex h-full flex-col border-border/50 bg-card/50 shadow-xl">
+    <Card className="flex h-full flex-col shadow-none border-none bg-transparent">
       <CardHeader className="flex flex-row items-start gap-4">
         <lesson.Icon className="h-10 w-10 text-primary flex-shrink-0 mt-1" />
         <div>
@@ -64,7 +64,7 @@ export function IpInfoCard({ lesson, onComplete }: { lesson: Lesson, onComplete:
           <div className="space-y-3">
             <p>{lesson.content[0]}</p>
             <p>{lesson.content[1]}</p>
-            <div className="border border-border/50 rounded-lg p-4 bg-background/30 space-y-2 my-4">
+            <div className="border border-border/50 rounded-lg p-4 bg-muted/50 space-y-2 my-4">
               <h4 className="font-semibold text-primary">Your Public IP Information:</h4>
               <p className="text-sm"><strong className="w-24 inline-block">IP Address:</strong> {ipData.ip}</p>
               <p className="text-sm"><strong className="w-24 inline-block">Location:</strong> {ipData.city}, {ipData.region}, {ipData.country}</p>

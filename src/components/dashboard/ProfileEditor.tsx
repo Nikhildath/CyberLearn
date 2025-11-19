@@ -15,14 +15,11 @@ export function ProfileEditor() {
 
   return (
     <>
-      <Button variant="ghost" className="relative group h-12 w-12 rounded-full p-0" onClick={() => setIsOpen(true)}>
-        <Avatar className="h-12 w-12 border-2 border-transparent group-hover:border-primary transition-colors">
+      <Button variant="ghost" className="relative group h-10 w-10 rounded-full p-0" onClick={() => setIsOpen(true)}>
+        <Avatar className="h-10 w-10 border-2 border-transparent group-hover:border-primary transition-colors">
             <AvatarImage src={user.avatar} alt={user.username} />
-            <AvatarFallback className="bg-muted text-lg">{user.username.charAt(0).toUpperCase()}</AvatarFallback>
+            <AvatarFallback className="bg-muted text-base">{user.username.charAt(0).toUpperCase()}</AvatarFallback>
         </Avatar>
-        <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-            <Edit className="h-6 w-6 text-white"/>
-        </div>
       </Button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>

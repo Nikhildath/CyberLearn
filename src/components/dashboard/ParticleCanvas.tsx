@@ -14,11 +14,17 @@ interface Particle {
   color: string;
 }
 
-const colors = [
-  'rgba(59, 130, 246, 0.8)', // blue-500
-  'rgba(37, 99, 235, 0.8)', // blue-600
-  'rgba(29, 78, 216, 0.8)', // blue-700
-  'rgba(255, 255, 255, 0.6)'
+const colorsLight = [
+  'rgba(20, 158, 202, 0.8)', 
+  'rgba(14, 116, 144, 0.8)',
+  'rgba(22, 163, 74, 0.7)',
+  'rgba(50, 50, 50, 0.6)'
+];
+
+const colorsSpeaking = [
+    'rgba(255, 255, 255, 0.9)',
+    'rgba(250, 250, 250, 0.8)',
+    'rgba(230, 230, 230, 0.7)',
 ];
 
 export const ParticleCanvas = ({ state, amplitude }: { state: 'idle' | 'recording' | 'thinking' | 'speaking', amplitude: number }) => {
@@ -40,11 +46,23 @@ export const ParticleCanvas = ({ state, amplitude }: { state: 'idle' | 'recordin
     canvas.style.width = `${canvasSize}px`;
     canvas.style.height = `${canvasSize}px`;
     ctx.scale(dpr, dpr);
+    
+    // Fill the background of the canvas
+    if (state === 'speaking') {
+      const gradient = ctx.createRadialGradient(canvasSize/2, canvasSize/2, 0, canvasSize/2, canvasSize/2, canvasSize/2);
+      gradient.addColorStop(0, 'hsl(195, 85%, 35%)');
+      gradient.addColorStop(1, 'hsl(195, 85%, 25%)');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvasSize, canvasSize);
+    }
+
 
     const init = () => {
       particlesArray.current = [];
       const radius = 60; // radius of the circle
       const numParticles = 150;
+      const colors = state === 'speaking' ? colorsSpeaking : colorsLight;
+
       for (let i = 0; i < numParticles; i++) {
         const angle = (i / numParticles) * Math.PI * 2;
         const x = canvasSize / 2 + Math.cos(angle) * radius;
@@ -63,6 +81,14 @@ export const ParticleCanvas = ({ state, amplitude }: { state: 'idle' | 'recordin
 
     const animate = () => {
       ctx.clearRect(0, 0, canvasSize, canvasSize);
+      if (state === 'speaking') {
+        const gradient = ctx.createRadialGradient(canvasSize/2, canvasSize/2, 0, canvasSize/2, canvasSize/2, canvasSize/1.5);
+        gradient.addColorStop(0, 'hsl(195, 85%, 40%)');
+        gradient.addColorStop(1, 'hsl(195, 85%, 30%)');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvasSize, canvasSize);
+      }
+      
       for (let i = 0; i < particlesArray.current.length; i++) {
         let p = particlesArray.current[i];
         let dx = mouse.current.x - p.x;
@@ -136,5 +162,5 @@ export const ParticleCanvas = ({ state, amplitude }: { state: 'idle' | 'recordin
     };
   }, [state, amplitude]);
 
-  return <canvas ref={canvasRef} className="absolute inset-0" />;
+  return <canvas ref={canvasRef} className={cn("absolute inset-0 transition-all duration-300", state === 'speaking' && "rounded-full")} />;
 };

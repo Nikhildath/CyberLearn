@@ -63,7 +63,7 @@ export function PasswordStrength() {
             placeholder="Type a password..."
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="h-14 text-xl bg-background/50"
+            className="h-14 text-xl bg-background"
         />
 
         {password && (
@@ -71,14 +71,14 @@ export function PasswordStrength() {
                 <div className="flex justify-between items-center mb-2">
                     <p className="text-sm font-medium">Password Strength:</p>
                     <p className={cn("text-sm font-bold",
-                        strength.color.startsWith('bg-red') && 'text-red-400',
-                        strength.color.startsWith('bg-orange') && 'text-orange-400',
-                        strength.color.startsWith('bg-yellow') && 'text-yellow-400',
-                        strength.color.startsWith('bg-emerald') && 'text-emerald-400',
-                        strength.color.startsWith('bg-green') && 'text-green-400',
+                        strength.color.startsWith('bg-red') && 'text-red-500',
+                        strength.color.startsWith('bg-orange') && 'text-orange-500',
+                        strength.color.startsWith('bg-yellow') && 'text-yellow-500',
+                        strength.color.startsWith('bg-emerald') && 'text-emerald-500',
+                        strength.color.startsWith('bg-green') && 'text-green-500',
                     )}>{strength.text}</p>
                 </div>
-                <Progress value={progressValue} className={cn("h-2 transition-all", strength.color)} indicatorClassName={strength.color} />
+                <Progress value={progressValue} className={cn("h-2 transition-all")} indicatorClassName={strength.color} />
              </div>
         )}
 
@@ -86,7 +86,7 @@ export function PasswordStrength() {
             {criteria.map((criterion, index) => {
                 const met = criterion.regex.test(password);
                 return (
-                    <div key={index} className={cn("flex items-center gap-2 transition-colors", met ? "text-green-400" : "text-muted-foreground")}>
+                    <div key={index} className={cn("flex items-center gap-2 transition-colors", met ? "text-green-600" : "text-muted-foreground")}>
                         {met ? <Check className="h-4 w-4"/> : <X className="h-4 w-4"/>}
                         <span>{criterion.text}</span>
                     </div>

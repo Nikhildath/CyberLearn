@@ -25,7 +25,7 @@ export function LessonGrid() {
   
   return (
     <div className="space-y-8">
-      <Card className="bg-card border-border shadow-lg">
+      <Card className="bg-card border-border shadow-sm">
         <CardHeader>
           <div className="flex items-center gap-4">
             <Trophy className="h-10 w-10 text-yellow-400"/>
@@ -38,7 +38,7 @@ export function LessonGrid() {
           </div>
         </CardHeader>
         <CardContent>
-          <Progress value={progressValue} className="h-3 bg-secondary" />
+          <Progress value={progressValue} className="h-3" />
         </CardContent>
       </Card>
       
@@ -50,7 +50,7 @@ export function LessonGrid() {
               key={lesson.id}
               onClick={() => handleLessonClick(lesson)}
               className={cn(
-                  "flex flex-col cursor-pointer transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 bg-card border-border",
+                  "flex flex-col cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-card border-border shadow-sm",
                   status === 'completed' && "border-green-500/30",
                   status === 'failed' && "border-red-500/30"
               )}
@@ -58,9 +58,9 @@ export function LessonGrid() {
               <CardHeader className="flex-row items-center gap-4 space-y-0 pb-4">
                 <div className={cn(
                     "p-3 rounded-lg",
-                    status === 'completed' ? "bg-green-500/10 text-green-400" :
-                    status === 'failed' ? "bg-red-500/10 text-red-400" :
-                    "bg-accent/50 text-accent-foreground"
+                    status === 'completed' ? "bg-green-500/10 text-green-500" :
+                    status === 'failed' ? "bg-red-500/10 text-red-500" :
+                    "bg-accent text-accent-foreground"
                 )}>
                     <lesson.Icon className="h-8 w-8" />
                 </div>

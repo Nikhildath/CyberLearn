@@ -18,7 +18,7 @@ const emails = [
       <p>Dear Customer,</p>
       <p>We have detected suspicious activity on your account. For your protection, we have temporarily suspended it.</p>
       <p>To restore access, you must verify your identity immediately. Please click the link below to log in and confirm your details.</p>
-      <a href="http://yourbank.login-portal.net/verify" class="text-blue-400 underline hover:text-blue-300">Click here to secure your account</a>
+      <a href="http://yourbank.login-portal.net/verify" class="text-blue-500 underline hover:text-blue-600">Click here to secure your account</a>
       <p>Failure to do so within 24 hours will result in permanent account closure.</p>
       <p>Thank you,<br/>Your Bank Security Team</p>
     `,
@@ -81,7 +81,7 @@ export function PhishingExercise() {
     toast({
       title: isCorrect ? 'Correct!' : 'Incorrect!',
       description: isCorrect ? 'Great analysis!' : 'Not quite. Let\'s review why.',
-      className: isCorrect ? 'bg-green-500/10 border-green-500' : 'bg-red-500/10 border-red-500'
+      className: isCorrect ? 'text-green-800 bg-green-50 border-green-200' : 'text-red-800 bg-red-50 border-red-200'
     });
   };
 
@@ -98,7 +98,7 @@ export function PhishingExercise() {
         <CardDescription>Analyze the email below. Is it a real email or a phishing attempt?</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="border border-border/80 rounded-lg bg-background/50">
+        <div className="border border-border/80 rounded-lg bg-background">
           {/* Email Header */}
           <div className="p-4 border-b border-border/80">
              <div className="flex items-center gap-4">
@@ -114,26 +114,26 @@ export function PhishingExercise() {
           </div>
           {/* Email Body */}
           <div 
-            className="p-4 space-y-4 text-foreground/90 prose prose-invert prose-sm max-w-none"
+            className="p-4 space-y-4 text-foreground/90 prose prose-sm max-w-none"
             dangerouslySetInnerHTML={{ __html: currentEmail.body }}
           />
         </div>
 
         {result && (
-          <div className="mt-4 p-4 rounded-lg bg-card border-2 border-border/50">
+          <div className="mt-4 p-4 rounded-lg bg-card border border-border/50">
             <h3 className="font-bold text-lg flex items-center gap-2">
               {result === 'correct' ? <CheckCircle className="text-green-500"/> : <AlertCircle className="text-red-500"/>}
               Analysis
             </h3>
             {currentEmail.isPhishing ? (
               <>
-                <p className="mt-2 text-muted-foreground">This email was a <b className="text-red-400">phishing attempt</b>. Here are the red flags:</p>
+                <p className="mt-2 text-muted-foreground">This email was a <b className="text-red-500">phishing attempt</b>. Here are the red flags:</p>
                 <ul className="mt-2 space-y-1 list-disc list-inside text-sm">
                   {currentEmail.redFlags.map((flag, i) => <li key={i}>{flag}</li>)}
                 </ul>
               </>
             ) : (
-              <p className="mt-2 text-muted-foreground">This email was <b className="text-green-400">safe</b>. It was a standard notification with no suspicious links, urgent demands, or unexpected attachments.</p>
+              <p className="mt-2 text-muted-foreground">This email was <b className="text-green-500">safe</b>. It was a standard notification with no suspicious links, urgent demands, or unexpected attachments.</p>
             )}
           </div>
         )}
@@ -144,7 +144,7 @@ export function PhishingExercise() {
             <Button className="w-full sm:w-1/2 h-12 text-base" variant="outline" onClick={() => handleCheck('phishing')}>
               <ShieldOff className="mr-2" /> Report as Phishing
             </Button>
-            <Button className="w-full sm:w-1/2 h-12 text-base" variant="secondary" onClick={() => handleCheck('safe')}>
+            <Button className="w-full sm:w-1/2 h-12 text-base" onClick={() => handleCheck('safe')}>
               <ShieldCheck className="mr-2" /> Mark as Safe
             </Button>
           </>

@@ -26,7 +26,7 @@ function MarkdownRenderer({ content }: { content: string }) {
     .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
     .replace(/\n/g, '<br />');
 
-  return <div className="prose prose-invert prose-sm max-w-none text-left" dangerouslySetInnerHTML={{ __html: html }} />;
+  return <div className="prose prose-sm max-w-none text-left" dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
 export function AiAssistant() {
@@ -216,7 +216,7 @@ export function AiAssistant() {
   }
 
   return (
-    <Card className="flex h-[70vh] flex-col bg-card/50 border-border/50 shadow-xl">
+    <Card className="flex h-[70vh] flex-col border-border/60 shadow-xl">
       <CardHeader>
         <CardTitle className="font-headline text-2xl text-primary">Interactive AI Assistant</CardTitle>
         <CardDescription>
@@ -227,7 +227,7 @@ export function AiAssistant() {
         
         <div className="relative w-48 h-48 flex items-center justify-center">
             <ParticleCanvas state={state as any} amplitude={averageAmplitude} />
-             <div className="z-10 text-white">
+             <div className={cn("z-10", state==='speaking' ? 'text-white' : 'text-primary')}>
                 {
                     {
                         'recording': <MicOff size={48} />,
@@ -240,7 +240,7 @@ export function AiAssistant() {
             </div>
         </div>
 
-        <ScrollArea className="h-40 w-full rounded-md border border-border/50 bg-background/20 p-4">
+        <ScrollArea className="h-40 w-full rounded-lg border border-border/50 bg-background p-4">
             <div className="min-h-[72px] w-full text-center flex items-center justify-center p-4">
                 {getDisplayMessage()}
             </div>
@@ -251,7 +251,7 @@ export function AiAssistant() {
         <form onSubmit={handleFormSubmit} className="w-full flex items-center gap-2">
             <Input 
                 placeholder="Type your question here..."
-                className="flex-1 h-12 text-base"
+                className="flex-1 h-12 text-base bg-white"
                 value={inputValue}
                 onChange={e => setInputValue(e.target.value)}
                 disabled={isThinking || isRecording}
@@ -262,7 +262,7 @@ export function AiAssistant() {
                 size="icon"
                 className={cn('h-12 w-12 transition-all duration-300 z-10 text-white',
                     state === 'recording' && 'bg-red-500/80 hover:bg-red-600/80',
-                    state !== 'recording' && 'bg-primary/80 hover:bg-primary/90'
+                    state !== 'recording' && 'bg-primary hover:bg-primary/90'
                 )}
                 disabled={isThinking}
                 aria-label={isRecording ? "Stop recording" : "Start recording"}
