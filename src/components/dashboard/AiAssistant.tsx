@@ -233,7 +233,7 @@ export function AiAssistant() {
   }
 
   return (
-    <Card className="flex flex-col border-border/60 shadow-xl h-full min-h-[600px] md:min-h-0 md:h-[calc(100vh-12rem)]">
+    <Card className="flex flex-col border-border/60 shadow-xl h-full">
       <CardHeader>
         <CardTitle className="font-headline text-2xl text-primary">Interactive AI Assistant</CardTitle>
         <CardDescription>
