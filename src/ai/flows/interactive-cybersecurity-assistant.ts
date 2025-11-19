@@ -8,7 +8,6 @@
  */
 
 import {ai} from '@/ai/genkit';
-import { googleAI } from '@genkit-ai/google-genai';
 import {z} from 'genkit';
 import wav from 'wav';
 
@@ -37,7 +36,7 @@ const interactiveCybersecurityAssistantFlow = ai.defineFlow(
   async ({ query, outputFormat }) => {
     // 1. Generate a text answer to the user's query.
     const answerResponse = await ai.generate({
-      model: googleAI.model('gemini-2.5-flash'),
+      model: 'googleai/gemini-2.5-flash',
       prompt: `You are a helpful and friendly cybersecurity expert. Answer the following question clearly and concisely. Use markdown for formatting, such as headings, bullet points, and bold text to make the information easy to digest.
 
 Question: "${query}"`,
@@ -56,7 +55,7 @@ Question: "${query}"`,
 
     // 2. Convert the text answer to speech.
     const ttsResponse = await ai.generate({
-      model: googleAI.model('gemini-2.5-flash-preview-tts'),
+      model: 'googleai/gemini-2.5-flash-preview-tts',
       config: {
         responseModalities: ['AUDIO'],
         speechConfig: {
