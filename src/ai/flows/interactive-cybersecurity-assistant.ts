@@ -40,6 +40,7 @@ const interactiveCybersecurityAssistantFlow = ai.defineFlow(
       prompt: `You are a helpful and friendly cybersecurity expert. Answer the following question clearly and concisely. Use markdown for formatting, such as headings, bullet points, and bold text to make the information easy to digest.
 
 Question: "${query}"`,
+      model: 'googleai/gemini-2.5-flash',
     });
     const answer = answerResponse.text;
 
