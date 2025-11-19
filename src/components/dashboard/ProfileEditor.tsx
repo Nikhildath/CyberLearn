@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Edit } from 'lucide-react';
 import { AccountSettings } from './AccountSettings';
@@ -24,6 +24,10 @@ export function ProfileEditor() {
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="sm:max-w-2xl bg-card border-border p-0">
+            <DialogHeader className="p-0 absolute -z-10 opacity-0">
+                <DialogTitle>Account Settings</DialogTitle>
+                <DialogDescription>Edit your profile and manage your API keys.</DialogDescription>
+            </DialogHeader>
             <AccountSettings />
         </DialogContent>
       </Dialog>

@@ -8,7 +8,7 @@ import { Progress } from '@/components/ui/progress';
 import { Button } from '../ui/button';
 import { useState } from 'react';
 import { LessonContent } from './LessonContent';
-import { Dialog, DialogContent } from '../ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Lesson } from '@/lib/lessons';
 import { cn } from '@/lib/utils';
 
@@ -84,7 +84,15 @@ export function LessonGrid() {
       </div>
       <Dialog open={!!selectedLesson} onOpenChange={(isOpen) => !isOpen && setSelectedLesson(null)}>
         <DialogContent className="max-w-4xl h-[90vh] flex flex-col bg-card border-border p-0">
-            {selectedLesson && <LessonContent lesson={selectedLesson} onComplete={() => setSelectedLesson(null)} />}
+           {selectedLesson && (
+              <>
+                <DialogHeader className="p-0 absolute -z-10 opacity-0">
+                  <DialogTitle>{selectedLesson.title}</DialogTitle>
+                  <DialogDescription>Interactive lesson for {selectedLesson.title}.</DialogDescription>
+                </DialogHeader>
+                <LessonContent lesson={selectedLesson} onComplete={() => setSelectedLesson(null)} />
+              </>
+            )}
         </DialogContent>
       </Dialog>
     </div>

@@ -22,6 +22,9 @@ import { ProfileEditor } from '@/components/dashboard/ProfileEditor';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
 } from '@/components/ui/dialog';
 import { LessonContent } from '@/components/dashboard/LessonContent';
 import { Lesson } from '@/lib/lessons';
@@ -113,7 +116,15 @@ export default function DashboardLayout({
 
       <Dialog open={!!selectedLesson} onOpenChange={(isOpen) => !isOpen && setSelectedLesson(null)}>
         <DialogContent className="max-w-4xl h-[90vh] flex flex-col bg-card border-border p-0">
-            {selectedLesson && <LessonContent lesson={selectedLesson} onComplete={() => setSelectedLesson(null)} />}
+             {selectedLesson && (
+              <>
+                <DialogHeader className="p-0 absolute -z-10 opacity-0">
+                  <DialogTitle>{selectedLesson.title}</DialogTitle>
+                  <DialogDescription>Interactive lesson for {selectedLesson.title}.</DialogDescription>
+                </DialogHeader>
+                <LessonContent lesson={selectedLesson} onComplete={() => setSelectedLesson(null)} />
+              </>
+            )}
         </DialogContent>
       </Dialog>
     </SidebarProvider>
