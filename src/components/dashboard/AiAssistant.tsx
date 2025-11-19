@@ -160,11 +160,13 @@ export function AiAssistant() {
     setIsThinking(true);
     try {
       const result = await interactiveCybersecurityAssistant({ query, outputFormat: format });
-      if (result.media) {
-        setResponseAudio(result.media);
-      }
-      if(result.text) {
-        setResponseText(result.text);
+      if (result) {
+          if (result.media) {
+            setResponseAudio(result.media);
+          }
+          if(result.text) {
+            setResponseText(result.text);
+          }
       }
       // The audio element will auto-play if src is set
     } catch (error) {
