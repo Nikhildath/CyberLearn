@@ -10,18 +10,18 @@ import { LayoutDashboard, Bot, User, TestTube2 } from 'lucide-react';
 export default function DashboardPage() {
   return (
     <Tabs defaultValue="dashboard" className="w-full">
-      <TabsList className="grid w-full grid-cols-4 h-14 bg-card border border-border/50 rounded-lg">
-        <TabsTrigger value="dashboard" className="h-10 text-sm">
-          <LayoutDashboard className="mr-2" /> Dashboard
+      <TabsList className="grid w-full grid-cols-4 h-16 bg-card border rounded-lg">
+        <TabsTrigger value="dashboard" className="h-12 text-sm gap-2">
+          <LayoutDashboard className="h-5 w-5" /> <span>Dashboard</span>
         </TabsTrigger>
-        <TabsTrigger value="assistant" className="h-10 text-sm">
-          <Bot className="mr-2" /> AI Assistant
+        <TabsTrigger value="assistant" className="h-12 text-sm gap-2">
+          <Bot className="h-5 w-5" /> <span>AI Assistant</span>
         </TabsTrigger>
-        <TabsTrigger value="test" className="h-10 text-sm">
-            <TestTube2 className="mr-2" /> Test
+        <TabsTrigger value="test" className="h-12 text-sm gap-2">
+            <TestTube2 className="h-5 w-5" /> <span>Lab</span>
         </TabsTrigger>
-        <TabsTrigger value="account" className="h-10 text-sm">
-          <User className="mr-2" /> Account
+        <TabsTrigger value="account" className="h-12 text-sm gap-2">
+          <User className="h-5 w-5" /> <span>Account</span>
         </TabsTrigger>
       </TabsList>
 

@@ -25,7 +25,7 @@ export function LessonGrid() {
   
   return (
     <div className="space-y-8">
-      <Card className="bg-card/50 border-border/50 shadow-lg">
+      <Card className="bg-card border-border shadow-lg">
         <CardHeader>
           <div className="flex items-center gap-4">
             <Trophy className="h-10 w-10 text-yellow-400"/>
@@ -38,7 +38,7 @@ export function LessonGrid() {
           </div>
         </CardHeader>
         <CardContent>
-          <Progress value={progressValue} className="h-3" />
+          <Progress value={progressValue} className="h-3 bg-secondary" />
         </CardContent>
       </Card>
       
@@ -50,9 +50,9 @@ export function LessonGrid() {
               key={lesson.id}
               onClick={() => handleLessonClick(lesson)}
               className={cn(
-                  "flex flex-col cursor-pointer transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 bg-card/50 border-border/50",
-                  status === 'completed' && "border-green-500/50",
-                  status === 'failed' && "border-red-500/50"
+                  "flex flex-col cursor-pointer transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 bg-card border-border",
+                  status === 'completed' && "border-green-500/30",
+                  status === 'failed' && "border-red-500/30"
               )}
             >
               <CardHeader className="flex-row items-center gap-4 space-y-0 pb-4">
@@ -60,7 +60,7 @@ export function LessonGrid() {
                     "p-3 rounded-lg",
                     status === 'completed' ? "bg-green-500/10 text-green-400" :
                     status === 'failed' ? "bg-red-500/10 text-red-400" :
-                    "bg-accent text-accent-foreground"
+                    "bg-accent/50 text-accent-foreground"
                 )}>
                     <lesson.Icon className="h-8 w-8" />
                 </div>
@@ -74,7 +74,7 @@ export function LessonGrid() {
                 </p>
               </CardContent>
               <CardFooter>
-                  <Button variant="secondary" className="w-full">
+                  <Button variant={status ? "secondary" : "default"} className="w-full">
                       {status ? "Review Lesson" : "Start Lesson"}
                   </Button>
               </CardFooter>

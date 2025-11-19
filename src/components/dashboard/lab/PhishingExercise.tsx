@@ -18,7 +18,7 @@ const emails = [
       <p>Dear Customer,</p>
       <p>We have detected suspicious activity on your account. For your protection, we have temporarily suspended it.</p>
       <p>To restore access, you must verify your identity immediately. Please click the link below to log in and confirm your details.</p>
-      <a href="http://yourbank.login-portal.net/verify" class="text-blue-500 underline">Click here to secure your account</a>
+      <a href="http://yourbank.login-portal.net/verify" class="text-blue-400 underline hover:text-blue-300">Click here to secure your account</a>
       <p>Failure to do so within 24 hours will result in permanent account closure.</p>
       <p>Thank you,<br/>Your Bank Security Team</p>
     `,
@@ -92,25 +92,25 @@ export function PhishingExercise() {
   };
   
   return (
-    <Card className="bg-card/50 border-border/50 shadow-xl">
+    <Card className="bg-transparent border-none shadow-none">
       <CardHeader>
         <CardTitle className="font-headline text-2xl">Phishing Identification Exercise</CardTitle>
         <CardDescription>Analyze the email below. Is it a real email or a phishing attempt?</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="border border-border/50 rounded-lg bg-background">
+        <div className="border border-border/80 rounded-lg bg-background/50">
           {/* Email Header */}
-          <div className="p-4 border-b border-border/50">
+          <div className="p-4 border-b border-border/80">
              <div className="flex items-center gap-4">
                 <Avatar>
-                    <AvatarFallback>{currentEmail.sender.charAt(0)}</AvatarFallback>
+                    <AvatarFallback className="bg-secondary text-secondary-foreground">{currentEmail.sender.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
                     <p className="font-semibold text-foreground">{currentEmail.sender}</p>
                     <p className="text-sm text-muted-foreground">{`<${currentEmail.senderEmail}>`}</p>
                 </div>
              </div>
-             <h2 className="text-xl font-bold mt-4">{currentEmail.subject}</h2>
+             <h2 className="text-xl font-bold mt-4 font-headline">{currentEmail.subject}</h2>
           </div>
           {/* Email Body */}
           <div 
@@ -141,10 +141,10 @@ export function PhishingExercise() {
       <CardFooter className="flex-col sm:flex-row gap-4 p-4 border-t border-border/50">
         {!result ? (
           <>
-            <Button className="w-full sm:w-1/2 h-12 text-base" variant="destructive" onClick={() => handleCheck('phishing')}>
+            <Button className="w-full sm:w-1/2 h-12 text-base" variant="outline" onClick={() => handleCheck('phishing')}>
               <ShieldOff className="mr-2" /> Report as Phishing
             </Button>
-            <Button className="w-full sm:w-1/2 h-12 text-base" variant="default" onClick={() => handleCheck('safe')}>
+            <Button className="w-full sm:w-1/2 h-12 text-base" variant="secondary" onClick={() => handleCheck('safe')}>
               <ShieldCheck className="mr-2" /> Mark as Safe
             </Button>
           </>

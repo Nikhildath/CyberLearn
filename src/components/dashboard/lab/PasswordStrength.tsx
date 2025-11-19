@@ -52,7 +52,7 @@ export function PasswordStrength() {
   const progressValue = (strength.score / 6) * 100;
 
   return (
-    <Card className="bg-card/50 border-border/50 shadow-xl">
+    <Card className="bg-transparent border-none shadow-none">
       <CardHeader>
         <CardTitle className="font-headline text-2xl">Password Strength Tester</CardTitle>
         <CardDescription>Enter a password to see how strong it is. A good password is your first line of defense.</CardDescription>
@@ -63,7 +63,7 @@ export function PasswordStrength() {
             placeholder="Type a password..."
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="h-14 text-xl"
+            className="h-14 text-xl bg-background/50"
         />
 
         {password && (
@@ -78,7 +78,7 @@ export function PasswordStrength() {
                         strength.color.startsWith('bg-green') && 'text-green-400',
                     )}>{strength.text}</p>
                 </div>
-                <Progress value={progressValue} className={cn("h-2 transition-all", strength.color)} />
+                <Progress value={progressValue} className={cn("h-2 transition-all", strength.color)} indicatorClassName={strength.color} />
              </div>
         )}
 
@@ -96,4 +96,10 @@ export function PasswordStrength() {
       </CardContent>
     </Card>
   );
+}
+
+declare module '@/components/ui/progress' {
+    interface ProgressProps {
+        indicatorClassName?: string;
+    }
 }
