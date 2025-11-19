@@ -37,19 +37,25 @@ const interactiveCybersecurityAssistantFlow = ai.defineFlow(
   async ({ query, outputFormat }) => {
     // 1. Generate a text answer to the user's query.
     const answerResponse = await ai.generate({
+      model: googleAI.model('gemini-2.5-flash'),
       prompt: `You are a helpful and friendly cybersecurity expert. Answer the following question clearly and concisely. Use markdown for formatting, such as headings, bullet points, and bold text to make the information easy to digest.
 
 Question: "${query}"`,
-      model: 'googleai/gemini-2.5-flash',
     });
+    
     const answer = answerResponse.text;
+
+    if (!answer) {
+      console.error('AI failed to generate a text response.');
+      return { text: 'Sorry, I was unable to generate a response. Please try again.' };
+    }
 
     if (outputFormat === 'text') {
       return { text: answer };
     }
 
     // 2. Convert the text answer to speech.
-    const { media } = await ai.generate({
+    const ttsResponse = await ai.generate({
       model: googleAI.model('gemini-2.5-flash-preview-tts'),
       config: {
         responseModalities: ['AUDIO'],
@@ -62,9 +68,14 @@ Question: "${query}"`,
       prompt: answer,
     });
     
-    if (!media) {
-      throw new Error('no media returned');
+    const media = ttsResponse.media;
+    
+    if (!media?.url) {
+      console.error('AI failed to generate an audio response.');
+      // Fallback to text if audio fails
+      return { text: answer };
     }
+
     const audioBuffer = Buffer.from(
       media.url.substring(media.url.indexOf(',') + 1),
       'base64'
@@ -89,9 +100,9 @@ async function toWav(
       bitDepth: sampleWidth * 8,
     });
 
-    let bufs = [] as any[];
+    const bufs: Buffer[] = [];
     writer.on('error', reject);
-    writer.on('data', function (d) {
+    writer.on('data', function (d: Buffer) {
       bufs.push(d);
     });
     writer.on('end', function () {
