@@ -153,9 +153,6 @@ export function LessonContent({ lesson, onComplete }: { lesson: Lesson | null, o
                     <CheckCircle className="h-8 w-8 text-green-500 mx-auto mb-2" />
                     <h4 className="font-semibold text-green-600">Lesson Complete!</h4>
                     <p className="text-sm text-green-700/80">You've mastered the basics of {lesson.title}.</p>
-                     <Button onClick={onComplete} className="w-full mt-4">
-                        Close Lesson
-                    </Button>
                 </div>
               )}
             </div>
