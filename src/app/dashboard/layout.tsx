@@ -58,7 +58,7 @@ export default function DashboardLayout({
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen">
+      <div className="flex min-h-screen w-full">
         <Sidebar side="left" className="border-r border-border/50 shrink-0" collapsible="icon">
           <SidebarHeader>
             <div className="flex h-16 items-center justify-start px-3">
@@ -98,7 +98,7 @@ export default function DashboardLayout({
           </SidebarFooter>
         </Sidebar>
         
-        <div className="flex-1 flex flex-col">
+        <div className="flex flex-1 flex-col w-full">
             <header className="flex h-16 items-center justify-between gap-4 border-b border-border/50 bg-background/80 backdrop-blur-sm px-4 lg:px-6 sticky top-0 z-30">
                 <div className="flex items-center gap-2">
                     <h1 className="text-xl font-semibold font-headline text-foreground">Cyber Security Training</h1>
