@@ -1,3 +1,4 @@
+
 'use client';
 import { useRef, useState } from 'react';
 import { useAuth, UserProfile } from '@/context/AuthContext';
@@ -138,50 +139,52 @@ export function AccountSettings() {
   if (!user) return null;
 
   return (
-    <Card className="max-w-2xl mx-auto shadow-xl border-border/60">
+    <Card className="w-full shadow-xl border-border/60">
         <CardHeader>
             <CardTitle className="font-headline text-2xl">Account Settings</CardTitle>
             <CardDescription>Manage your profile and API key settings.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-8">
-            <div className="space-y-4">
-                <h3 className="font-medium">User Profile</h3>
-                <div className="flex flex-col items-center gap-4">
-                     <button onClick={() => fileInputRef.current?.click()} className="relative group">
-                        <Avatar className="h-32 w-32 border-4 border-primary/20">
-                            <AvatarImage src={avatar} />
-                            <AvatarFallback className="bg-muted text-5xl">{username.charAt(0).toUpperCase()}</AvatarFallback>
-                        </Avatar>
-                        <div className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                            <Edit className="h-10 w-10 text-white"/>
-                        </div>
-                     </button>
-                    <input
-                        type="file"
-                        ref={fileInputRef}
-                        onChange={handleAvatarChange}
-                        className="hidden"
-                        accept="image/png, image/jpeg"
+            <div className="grid md:grid-cols-2 gap-8">
+                <div className="space-y-4">
+                    <h3 className="font-medium">User Profile</h3>
+                    <div className="flex flex-col items-center gap-4">
+                        <button onClick={() => fileInputRef.current?.click()} className="relative group">
+                            <Avatar className="h-32 w-32 border-4 border-primary/20">
+                                <AvatarImage src={avatar} />
+                                <AvatarFallback className="bg-muted text-5xl">{username.charAt(0).toUpperCase()}</AvatarFallback>
+                            </Avatar>
+                            <div className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                                <Edit className="h-10 w-10 text-white"/>
+                            </div>
+                        </button>
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handleAvatarChange}
+                            className="hidden"
+                            accept="image/png, image/jpeg"
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                    <Label htmlFor="username" className="text-base">
+                        Username
+                    </Label>
+                    <Input
+                        id="username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        className="h-12 text-base"
                     />
-                 </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="username" className="text-base">
-                    Username
-                  </Label>
-                  <Input
-                    id="username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="h-12 text-base"
-                  />
+                    </div>
                 </div>
-            </div>
 
-            <ApiKeyManager />
+                <ApiKeyManager />
+            </div>
         </CardContent>
         <CardFooter>
-            <Button type="submit" onClick={handleSave} size="lg" className="w-full">
+            <Button type="submit" onClick={handleSave} size="lg" className="w-full md:w-auto md:ml-auto">
                 <Save className="mr-2"/>
                 Save Changes
             </Button>
