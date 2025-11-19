@@ -139,7 +139,7 @@ export function AccountSettings() {
   if (!user) return null;
 
   return (
-    <Card className="w-full shadow-xl border-border/60">
+    <Card className="w-full h-full shadow-xl border-border/60">
         <CardHeader>
             <CardTitle className="font-headline text-2xl">Account Settings</CardTitle>
             <CardDescription>Manage your profile and API key settings.</CardDescription>

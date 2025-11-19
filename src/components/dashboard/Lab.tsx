@@ -15,7 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 
 export function Lab() {
   return (
-    <Card className="w-full shadow-xl border-border/60">
+    <Card className="w-full h-full shadow-xl border-border/60">
         <CardHeader>
             <CardTitle className="font-headline text-2xl">Cybersecurity Lab</CardTitle>
             <CardDescription>Test your skills with these interactive exercises.</CardDescription>
