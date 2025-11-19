@@ -71,7 +71,7 @@ const interactiveCybersecurityAssistantFlow = ai.defineFlow(
 
     // 1. Generate a text answer to the user's query.
     const answerResponse = await ai.generate({
-      model: 'googleai/gemini-1.5-flash-latest',
+      model: 'googleai/gemini-1.5-flash',
       prompt: `You are a helpful and friendly cybersecurity expert. Answer the following question clearly and concisely. Use markdown for formatting, such as headings, bullet points, and bold text to make the information easy to digest.
 
 Question: "${query}"`,
