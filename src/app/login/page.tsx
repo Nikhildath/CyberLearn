@@ -69,9 +69,9 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/40 p-4">
-      <div className="absolute inset-0 -z-10 h-full w-full bg-background bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:6rem_4rem]"></div>
-      <Card className="w-full max-w-sm shadow-2xl border-border/60">
+    <div className="flex min-h-screen items-center justify-center p-4">
+      <div className="absolute inset-0 -z-10 h-full w-full bg-background bg-[radial-gradient(hsl(var(--primary)/0.15)_1px,transparent_1px)] [background-size:16px_16px]"></div>
+      <Card className="w-full max-w-sm shadow-2xl border-border/60 bg-card/80 backdrop-blur-lg">
         <CardHeader className="text-center space-y-2">
             <div className="mx-auto flex justify-center">
                 <Logo className="text-primary text-2xl"/>

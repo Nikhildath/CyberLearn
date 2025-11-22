@@ -3,7 +3,7 @@
 import { useAuth } from '@/context/AuthContext';
 import { lessons } from '@/lib/lessons';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
-import { CheckCircle, XCircle, Trophy } from 'lucide-react';
+import { CheckCircle, XCircle, Trophy, ChevronRight } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '../ui/button';
 import { useState } from 'react';
@@ -25,12 +25,12 @@ export function LessonGrid() {
   
   return (
     <div className="space-y-8">
-      <Card className="bg-card border-border shadow-sm">
+      <Card className="bg-card/80 border-border shadow-2xl backdrop-blur-sm">
         <CardHeader>
           <div className="flex items-center gap-4">
             <Trophy className="h-10 w-10 text-yellow-400"/>
             <div>
-              <CardTitle className="font-headline text-2xl">Your Progress</CardTitle>
+              <CardTitle className="font-headline text-2xl text-foreground">Your Progress</CardTitle>
               <CardDescription>
                 You've completed {completedLessonsCount} of {lessons.length} lessons. Keep up the great work!
               </CardDescription>
@@ -38,7 +38,7 @@ export function LessonGrid() {
           </div>
         </CardHeader>
         <CardContent>
-          <Progress value={progressValue} className="h-3" />
+          <Progress value={progressValue} className="h-3" indicatorClassName="bg-primary" />
         </CardContent>
       </Card>
       
@@ -50,32 +50,33 @@ export function LessonGrid() {
               key={lesson.id}
               onClick={() => handleLessonClick(lesson)}
               className={cn(
-                  "flex flex-col cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-card border-border shadow-sm",
-                  status === 'completed' && "border-green-500/30",
-                  status === 'failed' && "border-red-500/30"
+                  "flex flex-col cursor-pointer transition-all duration-300 group bg-card/80 border-border/60 shadow-lg hover:shadow-primary/20 hover:-translate-y-1 hover:border-primary/50 backdrop-blur-sm",
+                  status === 'completed' && "border-green-500/50",
+                  status === 'failed' && "border-red-500/50"
               )}
             >
               <CardHeader className="flex-row items-center gap-4 space-y-0 pb-4">
                 <div className={cn(
-                    "p-3 rounded-lg",
-                    status === 'completed' ? "bg-green-500/10 text-green-500" :
-                    status === 'failed' ? "bg-red-500/10 text-red-500" :
-                    "bg-accent text-accent-foreground"
+                    "p-3 rounded-lg border border-transparent",
+                    status === 'completed' ? "bg-green-500/10 text-green-500 border-green-500/20" :
+                    status === 'failed' ? "bg-red-500/10 text-red-500 border-red-500/20" :
+                    "bg-accent text-primary border-border"
                 )}>
                     <lesson.Icon className="h-8 w-8" />
                 </div>
-                <CardTitle className="font-headline text-xl flex-1">{lesson.title}</CardTitle>
+                <CardTitle className="font-headline text-xl flex-1 text-foreground/90">{lesson.title}</CardTitle>
                 {status === 'completed' && <CheckCircle className="h-6 w-6 text-green-500" />}
                 {status === 'failed' && <XCircle className="h-6 w-6 text-red-500" />}
               </CardHeader>
               <CardContent className="flex-grow">
                 <p className="text-sm text-muted-foreground line-clamp-3">
-                  {lesson.content[1]}
+                  {lesson.content[0]}
                 </p>
               </CardContent>
               <CardFooter>
                   <Button variant={status ? "secondary" : "default"} className="w-full">
                       {status ? "Review Lesson" : "Start Lesson"}
+                      <ChevronRight className="ml-2 h-4 w-4 transform transition-transform group-hover:translate-x-1" />
                   </Button>
               </CardFooter>
             </Card>
@@ -83,7 +84,7 @@ export function LessonGrid() {
         })}
       </div>
       <Dialog open={!!selectedLesson} onOpenChange={(isOpen) => !isOpen && setSelectedLesson(null)}>
-        <DialogContent className="max-w-4xl h-[90vh] flex flex-col bg-card border-border p-0">
+        <DialogContent className="max-w-4xl h-[90vh] flex flex-col bg-card/90 border-border/80 backdrop-blur-xl p-0">
            {selectedLesson && (
               <>
                 <DialogHeader className="p-0 absolute -z-10 opacity-0">

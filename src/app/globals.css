@@ -36,34 +36,34 @@
   }
 
   .dark {
-    --background: 224 71.4% 4.1%;
+    --background: 220 20% 7%;
     --foreground: 210 20% 98%;
-    --card: 224 71.4% 4.1%;
+    --card: 220 20% 11%;
     --card-foreground: 210 20% 98%;
-    --popover: 224 71.4% 4.1%;
+    --popover: 220 20% 7%;
     --popover-foreground: 210 20% 98%;
-    --primary: 195 75% 48%;
-    --primary-foreground: 210 20% 98%;
-    --secondary: 215 27.9% 16.9%;
+    --primary: 180 100% 50%; /* Cyan */
+    --primary-foreground: 220 20% 7%;
+    --secondary: 215 28% 17%;
     --secondary-foreground: 210 20% 98%;
-    --muted: 215 27.9% 16.9%;
-    --muted-foreground: 217.9 10.6% 64.9%;
-    --accent: 215 27.9% 16.9%;
+    --muted: 215 28% 17%;
+    --muted-foreground: 218 11% 65%;
+    --accent: 215 28% 17%;
     --accent-foreground: 210 20% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 215 27.9% 16.9%;
-    --input: 215 27.9% 16.9%;
-    --ring: 195 75% 52%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 215 28% 17%;
+    --input: 215 28% 17%;
+    --ring: 180 100% 50%;
     
-    --sidebar-background: 224 71.4% 4.1%;
+    --sidebar-background: 220 20% 9%;
     --sidebar-foreground: 210 20% 98%;
-    --sidebar-border: 215 27.9% 16.9%;
-    --sidebar-accent: 215 27.9% 16.9%;
+    --sidebar-border: 215 28% 17%;
+    --sidebar-accent: 215 28% 17%;
     --sidebar-accent-foreground: 210 20% 98%;
-    --sidebar-primary: 195 75% 48%;
-    --sidebar-primary-foreground: 210 20% 98%;
-    --sidebar-ring: 195 75% 52%;
+    --sidebar-primary: 180 100% 50%;
+    --sidebar-primary-foreground: 220 20% 7%;
+    --sidebar-ring: 180 100% 50%;
   }
 }
 
@@ -75,4 +75,30 @@
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
+  
+  .dark {
+    /* Add a subtle grid background for the "hacker" feel */
+    background-color: hsl(var(--background));
+    background-image: 
+        linear-gradient(hsl(var(--border)) 1px, transparent 1px),
+        linear-gradient(to right, hsl(var(--border)) 1px, transparent 1px);
+    background-size: 40px 40px;
+    background-position: -1px -1px;
+  }
+}
+
+/* Custom scrollbar for a more integrated feel */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted) / 0.2);
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--accent-foreground) / 0.6);
 }
