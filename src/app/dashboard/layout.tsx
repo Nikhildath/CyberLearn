@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { LogOut, Bot, TestTube2, User, LayoutDashboard } from 'lucide-react';
+import { LogOut, Bot, TestTube2, User, LayoutDashboard, Menu } from 'lucide-react';
 import { lessons } from '@/lib/lessons';
 import {
   SidebarProvider,
@@ -14,6 +14,7 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { Logo } from '@/components/Logo';
 import { Button } from '@/components/ui/button';
@@ -28,6 +29,10 @@ import {
 } from '@/components/ui/dialog';
 import { LessonContent } from '@/components/dashboard/LessonContent';
 import { Lesson } from '@/lib/lessons';
+import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
 
 export default function DashboardLayout({
   children,
@@ -37,6 +42,7 @@ export default function DashboardLayout({
   const { user, logout, progress } = useAuth();
   const router = useRouter();
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (!user) {
@@ -59,7 +65,7 @@ export default function DashboardLayout({
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
-        <Sidebar side="left" className="border-r border-border/50 shrink-0" collapsible="icon">
+        <Sidebar side="left" className="border-r border-border/50 shrink-0" collapsible={isMobile ? "offcanvas" : "icon"}>
           <SidebarHeader>
             <div className="flex h-16 items-center justify-start px-3">
               <Logo className="text-primary transition-all group-data-[collapsible=icon]:-translate-x-12" />
@@ -87,26 +93,26 @@ export default function DashboardLayout({
             </SidebarMenu>
           </SidebarContent>
           <SidebarFooter>
-            <SidebarMenu>
-               <SidebarMenuItem>
-                  <SidebarMenuButton onClick={logout} tooltip="Logout">
-                    <LogOut />
-                    <span>Logout</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-            </SidebarMenu>
+            <div className='flex items-center gap-3 p-3 transition-colors duration-300 group-data-[collapsible=icon]:w-14 group-data-[collapsible=icon]:h-14 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:justify-center'>
+               <ProfileEditor />
+                <div className='flex flex-col group-data-[collapsible=icon]:hidden overflow-hidden'>
+                    <span className="text-sm font-semibold text-foreground whitespace-nowrap">{user.username}</span>
+                    <span className="text-xs text-muted-foreground whitespace-nowrap">CyberLearn Student</span>
+                </div>
+                <Button onClick={logout} variant="ghost" size="icon" className="group-data-[collapsible=icon]:hidden ml-auto">
+                    <LogOut className='w-5 h-5'/>
+                </Button>
+            </div>
           </SidebarFooter>
         </Sidebar>
         
         <div className="flex flex-1 flex-col w-full min-w-0">
-            <header className="flex h-16 items-center justify-between gap-4 border-b border-border/50 bg-background/80 backdrop-blur-sm px-4 lg:px-6 sticky top-0 z-30">
+            <header className="flex md:hidden h-16 items-center justify-between gap-4 border-b border-border/50 bg-background/80 backdrop-blur-sm px-4 lg:px-6 sticky top-0 z-30">
                 <div className="flex items-center gap-2">
-                    <h1 className="text-xl font-semibold font-headline text-foreground">Cyber Security Training</h1>
+                     <SidebarTrigger><Menu /></SidebarTrigger>
+                    <Logo className="text-primary text-base" />
                 </div>
-                <div className="flex items-center gap-4">
-                    <span className="text-sm text-muted-foreground hidden sm:inline">Welcome, {user.username}</span>
-                    <ProfileEditor />
-                </div>
+                 <ProfileEditor />
             </header>
             <main className="flex-1 p-4 sm:p-6 lg:p-8 bg-muted/30 flex flex-col">
                 {children}
@@ -115,7 +121,7 @@ export default function DashboardLayout({
       </div>
 
       <Dialog open={!!selectedLesson} onOpenChange={(isOpen) => !isOpen && setSelectedLesson(null)}>
-        <DialogContent className="max-w-4xl h-[90vh] flex flex-col bg-card border-border p-0">
+        <DialogContent className="max-w-6xl h-[90vh] flex flex-col bg-card/90 border-border/80 backdrop-blur-xl p-0">
              {selectedLesson && (
               <>
                 <DialogHeader className="p-0 absolute -z-10 opacity-0">

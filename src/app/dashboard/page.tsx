@@ -48,9 +48,13 @@ export default function DashboardPage() {
 
   return (
     <div className="w-full h-full">
+      <h1 className="text-3xl font-bold font-headline text-foreground mb-2">Dashboard</h1>
+      <p className="text-muted-foreground mb-8">Welcome back! Here's an overview of your learning journey.</p>
+      
       <WelcomeTutorial open={showTutorial} onComplete={handleTutorialComplete} />
+      
       <Tabs defaultValue="dashboard" className="w-full h-full flex flex-col">
-        <TabsList id="dashboard-tabs" className="grid w-full grid-cols-4 h-16 bg-card border rounded-lg shadow-sm">
+        <TabsList id="dashboard-tabs" className="grid w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-4 h-auto md:h-16 bg-card border rounded-lg shadow-sm p-2 sm:p-1.5">
           <TabsTrigger value="dashboard" className="h-12 text-sm gap-2">
             <LayoutDashboard className="h-5 w-5" /> <span>Dashboard</span>
           </TabsTrigger>

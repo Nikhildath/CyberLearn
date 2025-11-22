@@ -23,7 +23,7 @@ export function ProfileEditor() {
       </Button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="sm:max-w-2xl bg-card border-border p-0">
+        <DialogContent className="sm:max-w-3xl bg-card/90 border-border/80 backdrop-blur-xl p-0">
             <DialogHeader className="p-0 absolute -z-10 opacity-0">
                 <DialogTitle>Account Settings</DialogTitle>
                 <DialogDescription>Edit your profile and manage your API keys.</DialogDescription>
