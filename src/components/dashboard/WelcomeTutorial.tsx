@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, ArrowLeft, LayoutDashboard, Bot, TestTube2, User, Check } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
 
 const tutorialSteps = [
   {
@@ -50,8 +50,17 @@ const tutorialSteps = [
   },
 ];
 
+type TargetRect = {
+    top: number;
+    left: number;
+    width: number;
+    height: number;
+} | null;
+
 export function WelcomeTutorial({ open, onComplete }: { open: boolean, onComplete: () => void }) {
   const [step, setStep] = useState(0);
+  const [targetRect, setTargetRect] = useState<TargetRect>(null);
+  const dialogContentRef = useRef<HTMLDivElement>(null);
 
   const currentStep = tutorialSteps[step];
   const isLastStep = step === tutorialSteps.length - 1;
@@ -77,24 +86,70 @@ export function WelcomeTutorial({ open, onComplete }: { open: boolean, onComplet
     }
   }, [open]);
 
-  // Effect to switch tabs
+  // Effect to switch tabs and calculate target rect
   useEffect(() => {
-    if (open && currentStep.targetId && currentStep.targetValue) {
-      const targetElement = document.getElementById(currentStep.targetId)?.querySelector<HTMLButtonElement>(`[data-value="${currentStep.targetValue}"]`);
-      if (targetElement && targetElement.getAttribute('data-state') !== 'active') {
-        targetElement.click();
-      }
-    }
-  }, [step, open, currentStep]);
+    if (!open) return;
 
+    let targetElement: HTMLElement | null = null;
+    if (currentStep.targetId && currentStep.targetValue) {
+        const parentElement = document.getElementById(currentStep.targetId);
+        targetElement = parentElement?.querySelector<HTMLButtonElement>(`[data-value="${currentStep.targetValue}"]`);
+        if (targetElement && targetElement.getAttribute('data-state') !== 'active') {
+            targetElement.click();
+        }
+    } else if (currentStep.targetId) {
+        targetElement = document.getElementById(currentStep.targetId);
+    }
+    
+    // Give DOM time to update after tab click
+    const timeoutId = setTimeout(() => {
+        if (targetElement) {
+            const rect = targetElement.getBoundingClientRect();
+            setTargetRect({
+                top: rect.top,
+                left: rect.left,
+                width: rect.width,
+                height: rect.height
+            });
+        } else {
+            setTargetRect(null);
+        }
+    }, 100); // A short delay is often needed for tab content to render
+
+    return () => clearTimeout(timeoutId);
+
+  }, [step, open, currentStep]);
 
   if (!open) {
     return null;
   }
   
+  const getDialogPosition = () => {
+    if (!targetRect || !dialogContentRef.current) return {};
+    
+    const dialogHeight = dialogContentRef.current.offsetHeight;
+    const spaceBelow = window.innerHeight - targetRect.top - targetRect.height;
+    
+    if (spaceBelow > dialogHeight + 20) {
+        // Position below
+        return {
+            top: `${targetRect.top + targetRect.height + 10}px`,
+            left: `${targetRect.left + targetRect.width / 2}px`,
+            transform: 'translateX(-50%)',
+        }
+    } else {
+        // Position above
+         return {
+            top: `${targetRect.top - dialogHeight - 10}px`,
+            left: `${targetRect.left + targetRect.width / 2}px`,
+            transform: 'translateX(-50%)',
+        }
+    }
+  }
+
   const TutorialContent = () => (
-     <DialogContent className="sm:max-w-md bg-card border-border shadow-2xl">
-        <DialogHeader className="items-center text-center">
+     <div ref={dialogContentRef} className={cn("z-[101] w-full sm:max-w-md bg-card border-border shadow-2xl rounded-lg", !targetRect && "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2")}>
+        <DialogHeader className="items-center text-center p-6">
           <div className="rounded-full bg-primary/10 p-3 border-8 border-primary/5 mb-4">
               <currentStep.icon className="h-10 w-10 text-primary" />
           </div>
@@ -103,7 +158,7 @@ export function WelcomeTutorial({ open, onComplete }: { open: boolean, onComplet
             {currentStep.description}
           </DialogDescription>
         </DialogHeader>
-        <DialogFooter className="flex-row justify-between items-center pt-4">
+        <DialogFooter className="flex-row justify-between items-center p-6 pt-2">
             <div className="text-sm text-muted-foreground">
                 Step {step + 1} of {tutorialSteps.length}
             </div>
@@ -119,51 +174,29 @@ export function WelcomeTutorial({ open, onComplete }: { open: boolean, onComplet
                 </Button>
             </div>
         </DialogFooter>
-      </DialogContent>
+      </div>
   );
-
-  if (!currentStep.targetId) {
-    return (
-        <Dialog open={open} onOpenChange={(isOpen) => { if (!isOpen) onComplete() }}>
-            <TutorialContent />
-        </Dialog>
-    )
-  }
-
-  const targetElement = document.getElementById(currentStep.targetId)?.querySelector(`[data-value="${currentStep.targetValue}"]`);
-  
-  if (!targetElement) {
-     return (
-        <Dialog open={open} onOpenChange={(isOpen) => { if (!isOpen) onComplete() }}>
-            <TutorialContent />
-        </Dialog>
-    )
-  }
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => { if (!isOpen) onComplete() }}>
-       <TooltipProvider>
-            <Tooltip open={true}>
-                <TooltipTrigger asChild>
-                    <div 
-                        className="fixed inset-0"
-                        style={{
-                            top: targetElement?.getBoundingClientRect().top,
-                            left: targetElement?.getBoundingClientRect().left,
-                            width: targetElement?.getBoundingClientRect().width,
-                            height: targetElement?.getBoundingClientRect().height,
-                            pointerEvents: 'none',
-                            zIndex: 100,
-                            boxShadow: '0 0 0 9999px rgba(0,0,0,0.5)',
-                            borderRadius: 'var(--radius)',
-                        }}
-                    />
-                </TooltipTrigger>
-                <TooltipContent side="bottom" align="center" className="p-0 border-none bg-transparent shadow-none w-[448px] z-[101]">
-                    <TutorialContent />
-                </TooltipContent>
-            </Tooltip>
-        </TooltipProvider>
+       <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm">
+           {targetRect && (
+             <div 
+                className="fixed transition-all duration-300 ease-in-out pointer-events-none"
+                style={{ 
+                    top: targetRect.top - 8,
+                    left: targetRect.left - 8,
+                    width: targetRect.width + 16,
+                    height: targetRect.height + 16,
+                    boxShadow: '0 0 0 9999px rgba(0,0,0,0.6)',
+                    borderRadius: 'calc(var(--radius) + 4px)',
+                }}
+            />
+           )}
+           <div className="fixed" style={getDialogPosition()}>
+              <TutorialContent />
+           </div>
+       </div>
     </Dialog>
   );
 }
