@@ -157,7 +157,7 @@ export const lessons: Lesson[] = [
           "Connecting to the network with the strongest signal."
         ],
         correctAnswer: "Using a Virtual Private Network (VPN).",
-        explanation: "A VPN is the best tool for public Wi-Fi because it encrypts your entire internet connection, making it unreadable to eavesdroppers, even on an unsecured network."
+        explanation: "A VPN is the best tool for public Wi-G because it encrypts your entire internet connection, making it unreadable to eavesdroppers, even on an unsecured network."
       }
     ],
     youtubeVideoId: 'p6S81iS1aW4'
