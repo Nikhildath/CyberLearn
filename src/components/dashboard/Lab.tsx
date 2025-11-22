@@ -10,9 +10,10 @@ import {
 import { PhishingExercise } from './lab/PhishingExercise';
 import { MalwareSimulator } from './lab/MalwareSimulator';
 import { PasswordStrength } from './lab/PasswordStrength';
-import { Fish, Bug, KeyRound, ShieldAlert } from 'lucide-react';
+import { Fish, Bug, KeyRound, ShieldAlert, Network } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { IncidentResponseGuide } from './lab/IncidentResponseGuide';
+import { WiresharkChallenge } from './lab/WiresharkChallenge';
 
 export function Lab() {
   return (
@@ -54,6 +55,17 @@ export function Lab() {
                 </AccordionTrigger>
                 <AccordionContent className="p-1 -mx-1">
                 <PasswordStrength />
+                </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-5" className="border rounded-lg bg-background/50 px-4 shadow-sm">
+                <AccordionTrigger className="text-xl font-headline data-[state=open]:text-primary hover:no-underline">
+                <div className="flex items-center gap-3">
+                    <Network className="h-6 w-6" />
+                    <span>Network Traffic Analysis</span>
+                </div>
+                </AccordionTrigger>
+                <AccordionContent className="p-1 -mx-1">
+                <WiresharkChallenge />
                 </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-4" className="border-2 border-destructive/50 rounded-lg bg-destructive/5 px-4 shadow-lg">
