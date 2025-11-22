@@ -5,12 +5,27 @@ import { type Lesson } from '@/lib/lessons';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { CheckCircle, XCircle, AlertTriangle, ArrowRight, RefreshCw, X } from 'lucide-react';
+import { CheckCircle, XCircle, AlertTriangle, ArrowRight, RefreshCw, X, Youtube } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { IpInfoCard } from './IpInfoCard';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
+
+function YouTubeEmbed({ videoId }: { videoId: string }) {
+    return (
+        <div className="aspect-video w-full">
+            <iframe
+                className="w-full h-full rounded-lg shadow-2xl border-2 border-primary/20"
+                src={`https://www.youtube.com/embed/${videoId}`}
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+            ></iframe>
+        </div>
+    );
+}
 
 export function LessonContent({ lesson, onComplete }: { lesson: Lesson | null, onComplete: () => void }) {
   const { updateLessonProgress } = useAuth();
@@ -89,15 +104,27 @@ export function LessonContent({ lesson, onComplete }: { lesson: Lesson | null, o
 
     if (!showQuiz) {
         return (
-            <div className="flex-grow flex flex-col justify-between text-lg text-foreground/90 p-6">
-                <p className="flex-grow leading-relaxed">{currentMessage}</p>
-                <div className="flex items-center gap-4 mt-6">
-                    <div className="flex-1 text-sm text-muted-foreground">
-                        Step {messageIndex + 1} of {lesson.content.length}
+            <div className="grid md:grid-cols-2 gap-8 p-6 text-lg text-foreground/90 h-full">
+                <div className="flex flex-col justify-between">
+                     <p className="flex-grow leading-relaxed">{currentMessage}</p>
+                    <div className="flex items-center gap-4 mt-6">
+                        <div className="flex-1 text-sm text-muted-foreground">
+                            Step {messageIndex + 1} of {lesson.content.length}
+                        </div>
+                        <Button onClick={handleNext} className="w-1/2">
+                            {isLastMessage ? 'Start Quiz' : 'Next'} <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
                     </div>
-                    <Button onClick={handleNext} className="w-1/2">
-                        {isLastMessage ? 'Start Quiz' : 'Next'} <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
+                </div>
+                <div className="flex items-center justify-center">
+                    {lesson.youtubeVideoId ? (
+                        <YouTubeEmbed videoId={lesson.youtubeVideoId} />
+                    ) : (
+                        <div className="w-full h-full bg-muted/50 rounded-lg flex flex-col items-center justify-center text-muted-foreground">
+                           <Youtube className="h-16 w-16 mb-4"/>
+                           <p>No video for this lesson.</p>
+                        </div>
+                    )}
                 </div>
           </div>
         );

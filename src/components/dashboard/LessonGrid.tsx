@@ -42,7 +42,7 @@ export function LessonGrid() {
         </CardContent>
       </Card>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {lessons.map((lesson) => {
           const status = progress[lesson.id];
           return (
@@ -55,18 +55,20 @@ export function LessonGrid() {
                   status === 'failed' && "border-red-500/50"
               )}
             >
-              <CardHeader className="flex-row items-center gap-4 space-y-0 pb-4">
+              <CardHeader className="flex-row items-start gap-4 space-y-0 pb-4">
                 <div className={cn(
-                    "p-3 rounded-lg border border-transparent",
+                    "p-3 rounded-lg border",
                     status === 'completed' ? "bg-green-500/10 text-green-500 border-green-500/20" :
                     status === 'failed' ? "bg-red-500/10 text-red-500 border-red-500/20" :
                     "bg-accent text-primary border-border"
                 )}>
                     <lesson.Icon className="h-8 w-8" />
                 </div>
-                <CardTitle className="font-headline text-xl flex-1 text-foreground/90">{lesson.title}</CardTitle>
-                {status === 'completed' && <CheckCircle className="h-6 w-6 text-green-500" />}
-                {status === 'failed' && <XCircle className="h-6 w-6 text-red-500" />}
+                <div className="flex-1">
+                    <CardTitle className="font-headline text-xl text-foreground/90">{lesson.title}</CardTitle>
+                    {status === 'completed' && <p className="text-xs font-semibold text-green-500 flex items-center gap-1"><CheckCircle className="h-3 w-3"/> Completed</p>}
+                    {status === 'failed' && <p className="text-xs font-semibold text-red-500 flex items-center gap-1"><XCircle className="h-3 w-3"/> Failed</p>}
+                </div>
               </CardHeader>
               <CardContent className="flex-grow">
                 <p className="text-sm text-muted-foreground line-clamp-3">
@@ -75,7 +77,7 @@ export function LessonGrid() {
               </CardContent>
               <CardFooter>
                   <Button variant={status ? "secondary" : "default"} className="w-full">
-                      {status ? "Review Lesson" : "Start Lesson"}
+                      {status === 'completed' ? "Review Lesson" : status === 'failed' ? "Try Again" : "Start Lesson"}
                       <ChevronRight className="ml-2 h-4 w-4 transform transition-transform group-hover:translate-x-1" />
                   </Button>
               </CardFooter>
@@ -84,7 +86,7 @@ export function LessonGrid() {
         })}
       </div>
       <Dialog open={!!selectedLesson} onOpenChange={(isOpen) => !isOpen && setSelectedLesson(null)}>
-        <DialogContent className="max-w-4xl h-[90vh] flex flex-col bg-card/90 border-border/80 backdrop-blur-xl p-0">
+        <DialogContent className="max-w-6xl h-[90vh] flex flex-col bg-card/90 border-border/80 backdrop-blur-xl p-0">
            {selectedLesson && (
               <>
                 <DialogHeader className="p-0 absolute -z-10 opacity-0">
