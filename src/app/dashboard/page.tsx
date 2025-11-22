@@ -23,6 +23,17 @@ export default function DashboardPage() {
     } catch (error) {
       console.error('Could not access localStorage', error);
     }
+    
+    const handleReplayTutorial = () => {
+        setShowTutorial(true);
+    };
+
+    window.addEventListener('replay_tutorial', handleReplayTutorial);
+
+    return () => {
+        window.removeEventListener('replay_tutorial', handleReplayTutorial);
+    };
+
   }, []);
 
   const handleTutorialComplete = () => {

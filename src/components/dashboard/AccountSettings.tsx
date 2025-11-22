@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Edit, Save, Plus, Trash2, KeyRound, Eye, EyeOff } from 'lucide-react';
+import { Edit, Save, Plus, Trash2, KeyRound, Eye, EyeOff, HelpCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import {
   Select,
@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { cn } from '@/lib/utils';
+const LOCAL_STORAGE_KEY_TUTORIAL = 'cyberlearnhq_tutorial_seen';
 
 function ApiKeyManager() {
   const { apiKey, apiKeys, addApiKey, removeApiKey, setActiveApiKey } = useAuth();
@@ -135,6 +136,20 @@ export function AccountSettings() {
         });
     }
   };
+
+  const handleReplayTutorial = () => {
+    try {
+      localStorage.removeItem(LOCAL_STORAGE_KEY_TUTORIAL);
+      window.dispatchEvent(new CustomEvent('replay_tutorial'));
+    } catch (error) {
+      console.error('Could not access localStorage', error);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Could not restart the tutorial.',
+      });
+    }
+  };
   
   if (!user) return null;
 
@@ -180,7 +195,16 @@ export function AccountSettings() {
                     </div>
                 </div>
 
-                <ApiKeyManager />
+                <div className="space-y-6">
+                  <ApiKeyManager />
+                  <div className="space-y-4 rounded-lg border border-border/50 p-4">
+                      <h3 className="font-medium flex items-center gap-2"><HelpCircle className="h-5 w-5 text-primary" /> App Tutorial</h3>
+                      <p className="text-sm text-muted-foreground">
+                          Need a refresher? Replay the welcome tutorial to get a tour of the application's features.
+                      </p>
+                      <Button variant="outline" onClick={handleReplayTutorial}>Replay Tutorial</Button>
+                  </div>
+                </div>
             </div>
         </CardContent>
         <CardFooter>
