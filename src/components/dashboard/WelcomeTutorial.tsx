@@ -12,7 +12,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { ArrowRight, ArrowLeft, LayoutDashboard, Bot, TestTube2, User, Check } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { cn } from '@/lib/utils';
 
 const tutorialSteps = [
   {
@@ -78,6 +77,17 @@ export function WelcomeTutorial({ open, onComplete }: { open: boolean, onComplet
     }
   }, [open]);
 
+  // Effect to switch tabs
+  useEffect(() => {
+    if (open && currentStep.targetId && currentStep.targetValue) {
+      const targetElement = document.getElementById(currentStep.targetId)?.querySelector<HTMLButtonElement>(`[data-value="${currentStep.targetValue}"]`);
+      if (targetElement && targetElement.getAttribute('data-state') !== 'active') {
+        targetElement.click();
+      }
+    }
+  }, [step, open, currentStep]);
+
+
   if (!open) {
     return null;
   }
@@ -114,16 +124,24 @@ export function WelcomeTutorial({ open, onComplete }: { open: boolean, onComplet
 
   if (!currentStep.targetId) {
     return (
-        <Dialog open={open}>
+        <Dialog open={open} onOpenChange={(isOpen) => { if (!isOpen) onComplete() }}>
             <TutorialContent />
         </Dialog>
     )
   }
 
-  const targetElement = document.getElementById(currentStep.targetId)?.querySelector(`[data-state][data-value="${currentStep.targetValue}"]`);
+  const targetElement = document.getElementById(currentStep.targetId)?.querySelector(`[data-value="${currentStep.targetValue}"]`);
+  
+  if (!targetElement) {
+     return (
+        <Dialog open={open} onOpenChange={(isOpen) => { if (!isOpen) onComplete() }}>
+            <TutorialContent />
+        </Dialog>
+    )
+  }
 
   return (
-    <Dialog open={open}>
+    <Dialog open={open} onOpenChange={(isOpen) => { if (!isOpen) onComplete() }}>
        <TooltipProvider>
             <Tooltip open={true}>
                 <TooltipTrigger asChild>
@@ -141,7 +159,7 @@ export function WelcomeTutorial({ open, onComplete }: { open: boolean, onComplet
                         }}
                     />
                 </TooltipTrigger>
-                <TooltipContent side="bottom" align="center" className="p-0 border-none bg-transparent shadow-none w-[448px]">
+                <TooltipContent side="bottom" align="center" className="p-0 border-none bg-transparent shadow-none w-[448px] z-[101]">
                     <TutorialContent />
                 </TooltipContent>
             </Tooltip>
