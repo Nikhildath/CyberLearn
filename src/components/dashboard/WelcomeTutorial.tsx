@@ -1,14 +1,7 @@
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, ArrowLeft, LayoutDashboard, Bot, TestTube2, User, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -91,18 +84,21 @@ export function WelcomeTutorial({ open, onComplete }: { open: boolean, onComplet
     if (!open) return;
 
     let targetElement: HTMLElement | null = null;
-    if (currentStep.targetId && currentStep.targetValue) {
-        const parentElement = document.getElementById(currentStep.targetId);
-        targetElement = parentElement?.querySelector<HTMLButtonElement>(`[data-value="${currentStep.targetValue}"]`);
-        if (targetElement && targetElement.getAttribute('data-state') !== 'active') {
-            targetElement.click();
+    const { targetId, targetValue } = currentStep;
+
+    if (targetId) {
+        const parentElement = document.getElementById(targetId);
+        if (parentElement && targetValue) {
+            targetElement = parentElement.querySelector<HTMLButtonElement>(`[data-value="${targetValue}"]`);
+            if (targetElement && targetElement.getAttribute('data-state') !== 'active') {
+                targetElement.click();
+            }
+        } else {
+             targetElement = document.getElementById(targetId);
         }
-    } else if (currentStep.targetId) {
-        targetElement = document.getElementById(currentStep.targetId);
     }
     
-    // Give DOM time to update after tab click
-    const timeoutId = setTimeout(() => {
+    const calculateRect = () => {
         if (targetElement) {
             const rect = targetElement.getBoundingClientRect();
             setTargetRect({
@@ -114,7 +110,10 @@ export function WelcomeTutorial({ open, onComplete }: { open: boolean, onComplet
         } else {
             setTargetRect(null);
         }
-    }, 100); // A short delay is often needed for tab content to render
+    };
+    
+    // Give DOM time to update after tab click
+    const timeoutId = setTimeout(calculateRect, 150);
 
     return () => clearTimeout(timeoutId);
 
@@ -125,40 +124,52 @@ export function WelcomeTutorial({ open, onComplete }: { open: boolean, onComplet
   }
   
   const getDialogPosition = () => {
-    if (!targetRect || !dialogContentRef.current) return {};
+    if (!targetRect || !dialogContentRef.current) return {
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+    };
     
     const dialogHeight = dialogContentRef.current.offsetHeight;
-    const spaceBelow = window.innerHeight - targetRect.top - targetRect.height;
-    
+    const dialogWidth = dialogContentRef.current.offsetWidth;
+    const spaceBelow = window.innerHeight - targetRect.bottom;
+    const spaceAbove = targetRect.top;
+
+    let top: number;
     if (spaceBelow > dialogHeight + 20) {
         // Position below
-        return {
-            top: `${targetRect.top + targetRect.height + 10}px`,
-            left: `${targetRect.left + targetRect.width / 2}px`,
-            transform: 'translateX(-50%)',
-        }
-    } else {
+        top = targetRect.bottom + 10;
+    } else if (spaceAbove > dialogHeight + 20) {
         // Position above
-         return {
-            top: `${targetRect.top - dialogHeight - 10}px`,
-            left: `${targetRect.left + targetRect.width / 2}px`,
-            transform: 'translateX(-50%)',
-        }
+         top = targetRect.top - dialogHeight - 10;
+    } else {
+        // Fallback to center vertical
+        top = window.innerHeight / 2 - dialogHeight / 2;
+    }
+
+    let left = targetRect.left + (targetRect.width / 2) - (dialogWidth / 2);
+    // clamp left to be within window bounds
+    left = Math.max(10, Math.min(left, window.innerWidth - dialogWidth - 10));
+
+    return {
+        top: `${top}px`,
+        left: `${left}px`,
+        transform: 'none',
     }
   }
 
   const TutorialContent = () => (
-     <div ref={dialogContentRef} className={cn("z-[101] w-full sm:max-w-md bg-card border-border shadow-2xl rounded-lg", !targetRect && "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2")}>
-        <DialogHeader className="items-center text-center p-6">
-          <div className="rounded-full bg-primary/10 p-3 border-8 border-primary/5 mb-4">
+     <div ref={dialogContentRef} className="z-[101] w-full max-w-sm bg-card border-border shadow-2xl rounded-lg flex flex-col">
+        <div className="p-6 text-center">
+          <div className="mx-auto rounded-full bg-primary/10 p-3 border-8 border-primary/5 mb-4 w-fit">
               <currentStep.icon className="h-10 w-10 text-primary" />
           </div>
-          <DialogTitle className="font-headline text-2xl">{currentStep.title}</DialogTitle>
-          <DialogDescription className="text-base text-muted-foreground px-4">
+          <h2 className="font-headline text-2xl text-foreground">{currentStep.title}</h2>
+          <p className="text-base text-muted-foreground mt-2">
             {currentStep.description}
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter className="flex-row justify-between items-center p-6 pt-2">
+          </p>
+        </div>
+        <div className="flex-row justify-between items-center p-4 border-t border-border/50 bg-muted/30 flex rounded-b-lg">
             <div className="text-sm text-muted-foreground">
                 Step {step + 1} of {tutorialSteps.length}
             </div>
@@ -173,30 +184,25 @@ export function WelcomeTutorial({ open, onComplete }: { open: boolean, onComplet
                     {isLastStep ? <Check className="ml-2 h-4 w-4" /> : <ArrowRight className="ml-2 h-4 w-4" />}
                 </Button>
             </div>
-        </DialogFooter>
+        </div>
       </div>
   );
 
   return (
-    <Dialog open={open} onOpenChange={(isOpen) => { if (!isOpen) onComplete() }}>
-       <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm">
-           {targetRect && (
-             <div 
-                className="fixed transition-all duration-300 ease-in-out pointer-events-none"
-                style={{ 
-                    top: targetRect.top - 8,
-                    left: targetRect.left - 8,
-                    width: targetRect.width + 16,
-                    height: targetRect.height + 16,
-                    boxShadow: '0 0 0 9999px rgba(0,0,0,0.6)',
-                    borderRadius: 'calc(var(--radius) + 4px)',
-                }}
-            />
-           )}
-           <div className="fixed" style={getDialogPosition()}>
-              <TutorialContent />
-           </div>
-       </div>
-    </Dialog>
+    <div className="fixed inset-0 z-[100]">
+        <div 
+            className="absolute inset-0 bg-black/60 transition-all duration-300"
+            style={{
+                clipPath: targetRect 
+                    ? `path('M0 0 H${window.innerWidth} V${window.innerHeight} H0 Z M${targetRect.left - 8} ${targetRect.top - 8} H${targetRect.right + 8} V${targetRect.bottom + 8} H${targetRect.left - 8} Z')`
+                    : 'none',
+            }}
+        />
+        <div className="absolute transition-all duration-300" style={getDialogPosition()}>
+            <TutorialContent />
+        </div>
+    </div>
   );
 }
+
+    
