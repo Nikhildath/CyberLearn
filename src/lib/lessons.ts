@@ -60,7 +60,7 @@ export const lessons: Lesson[] = [
             explanation: "This is a classic phishing attempt. The slightly incorrect domain name is a major red flag. Never click links or call numbers in suspicious emails. Instead, go to the official website or use a trusted phone number."
         }
     ],
-    youtubeVideoId: 'o1g2g31yV28'
+    youtubeVideoId: 'V9J93Oi-04k'
   },
   {
     id: 'malware',
@@ -85,7 +85,7 @@ export const lessons: Lesson[] = [
             explanation: "Ransomware's main purpose is to hold your data hostage. It encrypts your files and demands a ransom to restore your access."
         }
     ],
-    youtubeVideoId: 'i3y3X_21s00'
+    youtubeVideoId: 'Ssu_xhy255g'
   },
     {
     id: 'password-security',
@@ -110,7 +110,7 @@ export const lessons: Lesson[] = [
             explanation: "'Tr0ub4dor&3' is a good example of a strong password because it uses a mix of character types and isn't a common word. While 'J@nuary2024!' is also good, it is tied to a specific date which can be easier to guess."
         }
     ],
-    youtubeVideoId: 'pG-46m0g9G8'
+    youtubeVideoId: 'g6nSHe1h3nU'
   },
   {
     id: '2fa',
@@ -235,7 +235,7 @@ export const lessons: Lesson[] = [
         explanation: "This is a classic social engineering tactic. The attacker is manipulating you by impersonating someone trustworthy to trick you into giving up your password. A legitimate IT department will never ask for your password."
       }
     ],
-    youtubeVideoId: 'g6nSHe1h3nU'
+    youtubeVideoId: 'Y-t3bI4sRkY'
   },
   {
     id: 'cloud-security',
@@ -335,7 +335,7 @@ export const lessons: Lesson[] = [
         explanation: "Unlike a password, you cannot change your fingerprint or your face. If this data is ever compromised in a breach, it is compromised forever, which is the primary risk of relying solely on biometrics."
       }
     ],
-    youtubeVideoId: 'Y-t3bI4sRkY'
+    youtubeVideoId: 'j4kI2h3d93E'
   },
   {
     id: 'data-encryption',
