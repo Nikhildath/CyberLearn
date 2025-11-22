@@ -159,8 +159,7 @@ export const lessons: Lesson[] = [
         explanation: "A VPN is the best tool for public Wi-Fi because it encrypts your entire internet connection, making it unreadable to eavesdroppers, even on an unsecured network."
       }
     ],
-    youtubeVideoId:_0x000D_
-'p6S81iS1aW4'
+    youtubeVideoId: 'p6S81iS1aW4'
   },
   {
     id: 'software-updates',
