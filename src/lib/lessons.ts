@@ -49,7 +49,8 @@ import {
   ScanEye,
   Type,
   Link,
-  Cookie
+  Cookie,
+  Search
 } from 'lucide-react';
 
 export type LessonQuiz = {
